@@ -34,17 +34,18 @@ function Logo({ className = "" }: { className?: string }) {
 
 function HeroSection() {
   const [url, setUrl] = useState("");
+  const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
+    if (!url.trim() || !email.trim()) return;
     setSubmitting(true);
     try {
       await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, email }),
       });
     } catch {
       // placeholder — silently handle
@@ -82,6 +83,14 @@ function HeroSection() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter your store URL"
+            className="h-12 flex-1 rounded-lg border border-input bg-background px-4 text-base shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2"
+          />
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email address"
             className="h-12 flex-1 rounded-lg border border-input bg-background px-4 text-base shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2"
           />
           <button
@@ -472,7 +481,7 @@ export default function Index() {
       {/* Sticky nav */}
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-5 sm:px-8">
-          <Logo className="text-xl text-secondary" />
+          <Logo className="text-xl text-primary" />
           <a
             href="#pricing"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition active:scale-[0.97] hover:shadow-md"
