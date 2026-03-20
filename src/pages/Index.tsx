@@ -481,7 +481,7 @@ export default function Index() {
       {/* Sticky nav */}
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-5 sm:px-8">
-          <Logo className="text-xl text-secondary" />
+          <Logo className="text-xl text-primary" />
           <a
             href="#pricing"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition active:scale-[0.97] hover:shadow-md"
