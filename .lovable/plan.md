@@ -1,52 +1,31 @@
 
 
-# HLPR — CRO Audit Landing Page
+# Two Tweaks Before Launch
 
-## Overview
-A single-page, mobile-first landing page for HLPR's e-commerce CRO audit service with three pricing tiers, built with React + Tailwind CSS.
+## 1. Logo color — brand blue
+Change `Logo` usage in the nav (line 475) from `text-secondary` to `text-primary` so it renders in `#038FF0` instead of dark navy.
 
-## Brand System
-- Primary blue: `#038FF0`, Dark navy: `#1B2A4A`, Light gray sections: `#F7FAFC`, White backgrounds
-- Bold lowercase "hlpr" logo text
-- Clean icons (Lucide React), no stock photos
+## 2. Email field in hero form
+Add an email input alongside the URL input in the hero form. On mobile (default), both fields stack vertically. On `sm:` breakpoints, lay them out in a row with the button. The webhook payload will include both `url` and `email`.
 
-## Page Sections (top to bottom)
+### Form layout
+```text
+Mobile:              Desktop (sm+):
+┌──────────────┐     ┌────────────┐ ┌─────────────┐ ┌──────────────────┐
+│ Store URL    │     │ Store URL  │ │ Your email  │ │ Get My Free ...  │
+└──────────────┘     └────────────┘ └─────────────┘ └──────────────────┘
+┌──────────────┐
+│ Your email   │
+└──────────────┘
+┌──────────────┐
+│ Get My Free…│
+└──────────────┘
+```
 
-### 1. Hero Section
-- Bold headline + subheadline about revenue leaks
-- URL input field + "Get My Free CRO Score" blue CTA (submits to placeholder webhook)
-- "Takes 30 seconds. No credit card required." microcopy
-- Trust badges row below
-
-### 2. Problem Section (navy background)
-- "97% of Visitors Leave" headline
-- Three stat cards: conversion rate, cart abandonment, revenue left on table
-- Supporting revenue math subtext
-
-### 3. How It Works
-- Three numbered steps: Enter URL → Get Score → Fix & Grow
-- Clean icons for each step
-
-### 4. Pricing Section
-- Three cards side-by-side (stacked on mobile):
-  - **Free CRO Score** — instant, basic findings
-  - **Mini Audit $29** — highlighted "Most Popular", 48hr delivery
-  - **Full Audit $99** — complete analysis, 5 business days
-- CTA buttons link to placeholder Stripe checkout URLs
-
-### 5. Credibility Section
-- Four horizontal stat cards ($916K Google Ads, $341K Meta Ads, 68% email open rates, $170K email revenue)
-
-### 6. FAQ Section
-- Accordion with 4 questions covering scope, differentiation, implementation services, free score value
-
-### 7. Footer
-- hlpr logo, tagline, contact info (email, phone, website)
-
-## Technical
-- SEO meta tags in `index.html`
-- Fully responsive — mobile-optimized for Meta ad traffic
-- SVG icons only via Lucide React, no heavy images
-- Placeholder webhook URL for form submission
-- Placeholder Stripe links on paid tier CTAs
+### Changes in `src/pages/Index.tsx`
+- **Line 36**: Add `const [email, setEmail] = useState("")`
+- **Line 41**: Update guard to also check `email.trim()`
+- **Line 48**: Include `email` in the JSON body
+- **Lines 75-93**: Add an email `<input type="email">` between the URL input and the submit button
+- **Line 475**: Change `text-secondary` → `text-primary` on the Logo
 
