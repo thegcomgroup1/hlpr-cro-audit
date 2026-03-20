@@ -85,6 +85,14 @@ function HeroSection() {
             placeholder="Enter your store URL"
             className="h-12 flex-1 rounded-lg border border-input bg-background px-4 text-base shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2"
           />
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email address"
+            className="h-12 flex-1 rounded-lg border border-input bg-background px-4 text-base shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2"
+          />
           <button
             type="submit"
             disabled={submitting}
