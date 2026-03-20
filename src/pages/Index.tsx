@@ -34,6 +34,7 @@ function Logo({ className = "" }: { className?: string }) {
 
 function HeroSection() {
   const [url, setUrl] = useState("");
+  const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
