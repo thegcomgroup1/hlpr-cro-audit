@@ -456,7 +456,7 @@ function Footer() {
             href="tel:+13029221428"
             className="flex items-center gap-1.5 transition hover:opacity-100"
           >
-            <Phone size={14} /> (302) 922-1428
+            <Phone size={14} /> (302) 550-8521
           </a>
           <a
             href="https://hlpr.io"
