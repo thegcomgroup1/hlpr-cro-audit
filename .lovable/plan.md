@@ -1,11 +1,19 @@
 
 
-# Update Stripe Payment Links
+# Fix Stripe Payment Link Typo
 
-Replace the two placeholder Stripe URLs in `src/pages/Index.tsx`:
+## Problem
+The Mini Audit Stripe URL has a typo: `59C` instead of `99C` in the checkout link, causing a "page not found" error on Stripe.
 
-- **Mini Audit ($29)**: `STRIPE_MINI` → `https://buy.stripe.com/7sYfZagmT2zafQM59C8IU00`
-- **Full CRO Audit ($99)**: `STRIPE_FULL` → `https://buy.stripe.com/fZubIU1rZgq05c885y8IU01`
+## Fix
+In `src/pages/Index.tsx` line 26, change:
+```
+https://buy.stripe.com/7sYfZagmT2zafQM59C8IU00
+```
+to:
+```
+https://buy.stripe.com/7sYfZagmT2zafQM99C8IU00
+```
 
-These are the constants on lines 27–28 of the file.
+Single character fix — `5` → `9`.
 
