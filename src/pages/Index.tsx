@@ -23,8 +23,8 @@ import {
 } from "lucide-react";
 
 const WEBHOOK_URL = "https://your-webhook-url.com/cro-score";
-const STRIPE_MINI = "https://buy.stripe.com/7sYfZagmT2zafQM99C8IU00";
-const STRIPE_FULL = "https://buy.stripe.com/fZubIU1rZgq05c885y8IU01";
+const STRIPE_MINI = "https://buy.stripe.com/fZubIU1rZgq05c885y8IU01";
+const STRIPE_FULL = "https://buy.stripe.com/7sYfZagmT2zafQM99C8IU00";
 
 function Logo({ className = "" }: { className?: string }) {
   return (
