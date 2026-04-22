@@ -43,13 +43,22 @@ function HeroSection() {
     if (!url.trim() || !email.trim()) return;
     setSubmitting(true);
     try {
-      await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, email }),
+      const { error } = await supabase.functions.invoke("cro-score", {
+        body: { url: url.trim(), email: email.trim() },
       });
-    } catch {
-      // placeholder — silently handle
+      if (error) throw error;
+      toast({
+        title: "Request received!",
+        description: "We'll email your CRO score shortly.",
+      });
+      setUrl("");
+      setEmail("");
+    } catch (err) {
+      toast({
+        title: "Something went wrong",
+        description: "Please check your URL and email, then try again.",
+        variant: "destructive",
+      });
     }
     setSubmitting(false);
   };
