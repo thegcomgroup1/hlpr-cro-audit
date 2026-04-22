@@ -299,7 +299,43 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
       highlight: false,
     },
   ];
-...
+
+  return (
+    <section className="bg-background">
+      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-28">
+        <h2 className="text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
+          Choose Your Audit Level
+        </h2>
+        <div className="mt-14 grid gap-8 sm:grid-cols-3">
+          {tiers.map((t) => (
+            <div
+              key={t.name}
+              className={`relative flex flex-col rounded-2xl border bg-card p-8 text-left shadow-sm transition hover:shadow-md ${
+                t.highlight
+                  ? "border-primary ring-2 ring-primary/20"
+                  : "border-border"
+              }`}
+            >
+              {t.highlight && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
+                  Most Popular
+                </span>
+              )}
+              <h3 className="text-lg font-bold text-secondary">{t.name}</h3>
+              <p className="mt-2 text-3xl font-extrabold tracking-tight text-secondary">
+                {t.price}
+              </p>
+              <ul className="mt-6 flex flex-1 flex-col gap-3">
+                {t.features.map((f) => (
+                  <li
+                    key={f}
+                    className="flex items-start gap-2 text-sm leading-snug text-muted-foreground"
+                  >
+                    <Check size={16} className="mt-0.5 shrink-0 text-primary" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
               {t.tier ? (
                 <button
                   type="button"
