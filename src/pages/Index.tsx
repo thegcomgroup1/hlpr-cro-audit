@@ -244,8 +244,18 @@ function HowItWorksSection() {
   );
 }
 
-function PricingSection() {
-  const tiers = [
+type Tier = {
+  name: string;
+  price: string;
+  features: string[];
+  cta: string;
+  highlight: boolean;
+  tier?: AuditTier;
+  href?: string;
+};
+
+function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => void }) {
+  const tiers: Tier[] = [
     {
       name: "CRO Score",
       price: "FREE",
@@ -269,8 +279,8 @@ function PricingSection() {
         "Revenue impact estimates",
         "Delivered within 48 hours",
       ],
-      cta: "Get Mini Audit",
-      href: STRIPE_MINI,
+      cta: "Get Mini Audit — $29",
+      tier: "mini",
       highlight: true,
     },
     {
@@ -284,61 +294,36 @@ function PricingSection() {
         "Priority action plan with effort/impact matrix",
         "Delivered within 5 business days",
       ],
-      cta: "Get Full Audit",
-      href: STRIPE_FULL,
+      cta: "Get Full Audit — $99",
+      tier: "full",
       highlight: false,
     },
   ];
-
-  return (
-    <section className="bg-background">
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-28">
-        <h2 className="text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
-          Choose Your Audit Level
-        </h2>
-        <div className="mt-14 grid gap-8 sm:grid-cols-3">
-          {tiers.map((t) => (
-            <div
-              key={t.name}
-              className={`relative flex flex-col rounded-2xl border bg-card p-8 text-left shadow-sm transition hover:shadow-md ${
-                t.highlight
-                  ? "border-primary ring-2 ring-primary/20"
-                  : "border-border"
-              }`}
-            >
-              {t.highlight && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
-                  Most Popular
-                </span>
+...
+              {t.tier ? (
+                <button
+                  type="button"
+                  onClick={() => onSelectTier(t.tier!)}
+                  className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
+                    t.highlight
+                      ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
+                      : "border border-primary text-primary hover:bg-primary/5"
+                  }`}
+                >
+                  {t.cta}
+                </button>
+              ) : (
+                <a
+                  href={t.href}
+                  className={`mt-8 block rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
+                    t.highlight
+                      ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
+                      : "border border-primary text-primary hover:bg-primary/5"
+                  }`}
+                >
+                  {t.cta}
+                </a>
               )}
-              <h3 className="text-lg font-bold text-secondary">{t.name}</h3>
-              <p className="mt-2 text-3xl font-extrabold tracking-tight text-secondary">
-                {t.price}
-              </p>
-              <ul className="mt-6 flex flex-1 flex-col gap-3">
-                {t.features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-2 text-sm leading-snug text-muted-foreground"
-                  >
-                    <Check
-                      size={16}
-                      className="mt-0.5 shrink-0 text-primary"
-                    />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href={t.href}
-                className={`mt-8 block rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
-                  t.highlight
-                    ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
-                    : "border border-primary text-primary hover:bg-primary/5"
-                }`}
-              >
-                {t.cta}
-              </a>
             </div>
           ))}
         </div>
