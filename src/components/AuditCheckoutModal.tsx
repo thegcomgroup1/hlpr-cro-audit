@@ -1,0 +1,220 @@
+import { useEffect, useRef, useState } from "react";
+import { X, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+export type AuditTier = "mini" | "full";
+
+interface Props {
+  open: boolean;
+  tier: AuditTier | null;
+  onClose: () => void;
+}
+
+const TIER_META: Record<AuditTier, { label: string; price: string }> = {
+  mini: { label: "Mini", price: "29" },
+  full: { label: "Full", price: "99" },
+};
+
+export default function AuditCheckoutModal({ open, tier, onClose }: Props) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const firstFieldRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      setError(null);
+      setTimeout(() => firstFieldRef.current?.focus(), 50);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !submitting) onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open, submitting, onClose]);
+
+  if (!open || !tier) return null;
+  const meta = TIER_META[tier];
+
+  const validate = (): string | null => {
+    if (!name.trim()) return "Please enter your name.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return "Please enter a valid email.";
+    if (phone.trim().length < 7) return "Please enter a valid phone number.";
+    const url = websiteUrl.trim();
+    if (url.length < 4 || !url.includes(".") || !/[a-zA-Z]/.test(url))
+      return "Please enter a valid website URL.";
+    return null;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const v = validate();
+    if (v) {
+      setError(v);
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("create-audit-checkout", {
+        body: {
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          website_url: websiteUrl.trim(),
+          tier,
+        },
+      });
+      if (fnError) throw fnError;
+      if (!data?.checkout_url) throw new Error("Missing checkout URL");
+      window.location.href = data.checkout_url;
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please check your details and try again.");
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-secondary/60 p-0 backdrop-blur-sm animate-in fade-in duration-200 sm:items-center sm:p-4"
+      onClick={() => !submitting && onClose()}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="audit-modal-title"
+    >
+      <div
+        className="relative flex max-h-[100dvh] w-full flex-col overflow-y-auto rounded-t-2xl bg-card p-6 shadow-2xl animate-in slide-in-from-bottom-4 duration-200 sm:max-h-[90vh] sm:max-w-md sm:rounded-2xl sm:p-8"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={() => !submitting && onClose()}
+          disabled={submitting}
+          aria-label="Close"
+          className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-secondary disabled:opacity-50"
+        >
+          <X size={18} />
+        </button>
+
+        <h2
+          id="audit-modal-title"
+          className="pr-8 text-2xl font-extrabold tracking-tight text-secondary"
+        >
+          Get Your {meta.label} Audit — ${meta.price}
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Tell us a bit about your store and we'll get started within 48 hours.
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+          <div>
+            <label htmlFor="audit-name" className="mb-1.5 block text-sm font-medium text-secondary">
+              Name
+            </label>
+            <input
+              id="audit-name"
+              ref={firstFieldRef}
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={submitting}
+              className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm shadow-sm outline-none ring-ring transition focus:ring-2 disabled:opacity-60"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="audit-email" className="mb-1.5 block text-sm font-medium text-secondary">
+              Email
+            </label>
+            <input
+              id="audit-email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={submitting}
+              className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm shadow-sm outline-none ring-ring transition focus:ring-2 disabled:opacity-60"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="audit-phone" className="mb-1.5 block text-sm font-medium text-secondary">
+              Phone
+            </label>
+            <input
+              id="audit-phone"
+              type="tel"
+              required
+              placeholder="(555) 123-4567"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              disabled={submitting}
+              className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2 disabled:opacity-60"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="audit-url" className="mb-1.5 block text-sm font-medium text-secondary">
+              Website URL
+            </label>
+            <input
+              id="audit-url"
+              type="url"
+              required
+              placeholder="https://yourstore.com"
+              value={websiteUrl}
+              onChange={(e) => setWebsiteUrl(e.target.value)}
+              disabled={submitting}
+              className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2 disabled:opacity-60"
+            />
+          </div>
+
+          {error && (
+            <p
+              role="alert"
+              className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md transition active:scale-[0.97] hover:shadow-lg disabled:opacity-70"
+          >
+            {submitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" /> Processing…
+              </>
+            ) : (
+              <>Continue to Payment →</>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => !submitting && onClose()}
+            disabled={submitting}
+            className="text-center text-sm text-muted-foreground transition hover:text-secondary disabled:opacity-60"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

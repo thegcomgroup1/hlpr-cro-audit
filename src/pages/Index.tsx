@@ -23,9 +23,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-
-const STRIPE_MINI = "https://buy.stripe.com/fZubIU1rZgq05c885y8IU01";
-const STRIPE_FULL = "https://buy.stripe.com/7sYfZagmT2zafQM99C8IU00";
+import AuditCheckoutModal, { type AuditTier } from "@/components/AuditCheckoutModal";
 
 function Logo({ className = "" }: { className?: string }) {
   return (
@@ -246,8 +244,18 @@ function HowItWorksSection() {
   );
 }
 
-function PricingSection() {
-  const tiers = [
+type Tier = {
+  name: string;
+  price: string;
+  features: string[];
+  cta: string;
+  highlight: boolean;
+  tier?: AuditTier;
+  href?: string;
+};
+
+function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => void }) {
+  const tiers: Tier[] = [
     {
       name: "CRO Score",
       price: "FREE",
@@ -271,8 +279,8 @@ function PricingSection() {
         "Revenue impact estimates",
         "Delivered within 48 hours",
       ],
-      cta: "Get Mini Audit",
-      href: STRIPE_MINI,
+      cta: "Get Mini Audit — $29",
+      tier: "mini",
       highlight: true,
     },
     {
@@ -286,8 +294,8 @@ function PricingSection() {
         "Priority action plan with effort/impact matrix",
         "Delivered within 5 business days",
       ],
-      cta: "Get Full Audit",
-      href: STRIPE_FULL,
+      cta: "Get Full Audit — $99",
+      tier: "full",
       highlight: false,
     },
   ];
@@ -323,24 +331,35 @@ function PricingSection() {
                     key={f}
                     className="flex items-start gap-2 text-sm leading-snug text-muted-foreground"
                   >
-                    <Check
-                      size={16}
-                      className="mt-0.5 shrink-0 text-primary"
-                    />
+                    <Check size={16} className="mt-0.5 shrink-0 text-primary" />
                     {f}
                   </li>
                 ))}
               </ul>
-              <a
-                href={t.href}
-                className={`mt-8 block rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
-                  t.highlight
-                    ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
-                    : "border border-primary text-primary hover:bg-primary/5"
-                }`}
-              >
-                {t.cta}
-              </a>
+              {t.tier ? (
+                <button
+                  type="button"
+                  onClick={() => onSelectTier(t.tier!)}
+                  className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
+                    t.highlight
+                      ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
+                      : "border border-primary text-primary hover:bg-primary/5"
+                  }`}
+                >
+                  {t.cta}
+                </button>
+              ) : (
+                <a
+                  href={t.href}
+                  className={`mt-8 block rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
+                    t.highlight
+                      ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
+                      : "border border-primary text-primary hover:bg-primary/5"
+                  }`}
+                >
+                  {t.cta}
+                </a>
+              )}
             </div>
           ))}
         </div>
@@ -486,6 +505,8 @@ function Footer() {
 }
 
 export default function Index() {
+  const [modalTier, setModalTier] = useState<AuditTier | null>(null);
+
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Sticky nav */}
@@ -507,11 +528,17 @@ export default function Index() {
       <ProblemSection />
       <HowItWorksSection />
       <div id="pricing">
-        <PricingSection />
+        <PricingSection onSelectTier={setModalTier} />
       </div>
       <CredibilitySection />
       <FAQSection />
       <Footer />
+
+      <AuditCheckoutModal
+        open={modalTier !== null}
+        tier={modalTier}
+        onClose={() => setModalTier(null)}
+      />
     </div>
   );
 }
