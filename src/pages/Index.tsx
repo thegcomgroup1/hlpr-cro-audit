@@ -21,8 +21,9 @@ import {
   FileCheck,
   LayoutGrid,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
-const WEBHOOK_URL = "https://your-webhook-url.com/cro-score";
 const STRIPE_MINI = "https://buy.stripe.com/fZubIU1rZgq05c885y8IU01";
 const STRIPE_FULL = "https://buy.stripe.com/7sYfZagmT2zafQM99C8IU00";
 
