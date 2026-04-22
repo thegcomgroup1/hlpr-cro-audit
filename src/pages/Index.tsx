@@ -505,6 +505,8 @@ function Footer() {
 }
 
 export default function Index() {
+  const [modalTier, setModalTier] = useState<AuditTier | null>(null);
+
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Sticky nav */}
@@ -526,11 +528,17 @@ export default function Index() {
       <ProblemSection />
       <HowItWorksSection />
       <div id="pricing">
-        <PricingSection />
+        <PricingSection onSelectTier={setModalTier} />
       </div>
       <CredibilitySection />
       <FAQSection />
       <Footer />
+
+      <AuditCheckoutModal
+        open={modalTier !== null}
+        tier={modalTier}
+        onClose={() => setModalTier(null)}
+      />
     </div>
   );
 }
