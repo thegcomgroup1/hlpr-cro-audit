@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          payment_status: string
+          phone: string
+          stripe_session_id: string | null
+          tier: string
+          website_url: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          payment_status?: string
+          phone: string
+          stripe_session_id?: string | null
+          tier: string
+          website_url: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          payment_status?: string
+          phone?: string
+          stripe_session_id?: string | null
+          tier?: string
+          website_url?: string
+        }
+        Relationships: []
+      }
       cro_score_requests: {
         Row: {
           created_at: string
