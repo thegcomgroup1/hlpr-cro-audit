@@ -1,20 +1,75 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders } from "jsr:@supabase/supabase-js@2/cors";
-import { z } from "npm:zod@3.23.8";
 
-const BodySchema = z.object({
-  name: z.string().trim().min(1, "Name required").max(100),
-  email: z.string().trim().email("Invalid email").max(255),
-  phone: z.string().trim().min(7, "Phone required").max(30),
-  website_url: z
-    .string()
-    .trim()
-    .min(4, "URL too short")
-    .max(2048)
-    .refine((v) => v.includes("."), { message: "URL must contain a period" })
-    .refine((v) => /[a-zA-Z]/.test(v), { message: "URL must contain at least one letter" }),
-  tier: z.enum(["mini", "full"]),
-});
+interface IntakeAnswers {
+  industry?: string;
+  business_model?: string;
+  primary_offer?: string;
+  aov?: string;
+  monthly_traffic?: string;
+  current_cvr?: string;
+  pain_points?: string;
+  top_objections?: string;
+  social_proof_assets?: string;
+  primary_kpi?: string;
+  prior_attempts?: string;
+  additional_notes?: string;
+  business_name?: string;
+  contact_phone?: string;
+}
+
+interface RequestBody {
+  name: string;
+  email: string;
+  phone: string;
+  website_url: string;
+  tier: "mini" | "full";
+  intake_answers?: IntakeAnswers;
+}
+
+function validate(body: unknown): { ok: true; data: RequestBody } | { ok: false; error: string } {
+  if (!body || typeof body !== "object") return { ok: false, error: "Body must be a JSON object" };
+  const b = body as Record<string, unknown>;
+
+  const name = typeof b.name === "string" ? b.name.trim() : "";
+  if (!name || name.length > 100) return { ok: false, error: "Invalid name" };
+
+  const email = typeof b.email === "string" ? b.email.trim() : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 255) {
+    return { ok: false, error: "Invalid email" };
+  }
+
+  const phone = typeof b.phone === "string" ? b.phone.trim() : "";
+  if (phone.length < 7 || phone.length > 30) return { ok: false, error: "Invalid phone" };
+
+  const website_url = typeof b.website_url === "string" ? b.website_url.trim() : "";
+  if (
+    website_url.length < 4 ||
+    website_url.length > 2048 ||
+    !website_url.includes(".") ||
+    !/[a-zA-Z]/.test(website_url)
+  ) {
+    return { ok: false, error: "Invalid website URL" };
+  }
+
+  const tier = b.tier;
+  if (tier !== "mini" && tier !== "full") return { ok: false, error: "Invalid tier" };
+
+  // Intake answers are optional and free-form (jsonb). Cap each string field
+  // length defensively so an attacker can't dump megabytes into our DB.
+  let intake_answers: IntakeAnswers | undefined;
+  if (b.intake_answers && typeof b.intake_answers === "object") {
+    const raw = b.intake_answers as Record<string, unknown>;
+    intake_answers = {};
+    for (const [k, v] of Object.entries(raw)) {
+      if (typeof v === "string" && v.length <= 2000) {
+        (intake_answers as Record<string, string>)[k] = v.trim();
+      }
+    }
+  }
+
+  return { ok: true, data: { name, email, phone, website_url, tier, intake_answers } };
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -42,18 +97,15 @@ Deno.serve(async (req) => {
     }
 
     const json = await req.json().catch(() => null);
-    const parsed = BodySchema.safeParse(json);
-    if (!parsed.success) {
-      return new Response(
-        JSON.stringify({
-          error: "Invalid input",
-          details: parsed.error.flatten().fieldErrors,
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    const parsed = validate(json);
+    if (!parsed.ok) {
+      return new Response(JSON.stringify({ error: parsed.error }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const { name, email, phone, website_url, tier } = parsed.data;
+    const { name, email, phone, website_url, tier, intake_answers } = parsed.data;
     const priceId = tier === "mini" ? STRIPE_PRICE_ID_MINI : STRIPE_PRICE_ID_FULL;
 
     const supabase = createClient(
@@ -61,10 +113,22 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // 1. Insert audit_requests row
+    // 1. Insert audit_requests row (with intake answers if provided)
+    const insertPayload: Record<string, unknown> = {
+      name,
+      email,
+      phone,
+      website_url,
+      tier,
+    };
+    if (intake_answers && Object.keys(intake_answers).length > 0) {
+      insertPayload.intake_answers = intake_answers;
+      insertPayload.intake_completed_at = new Date().toISOString();
+    }
+
     const { data: inserted, error: insertError } = await supabase
       .from("audit_requests")
-      .insert({ name, email, phone, website_url, tier })
+      .insert(insertPayload)
       .select("id")
       .single();
 
