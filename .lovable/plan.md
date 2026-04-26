@@ -1,221 +1,139 @@
-# HLPR Landing Page Overhaul + Universal Audit Mega-Prompt + Intake Form
 
-Built from: ThrillX 3-video framework, Hormozi value equation, ThrillX prompt doc, ThrillX **B2B/General V1** wireframe (best fit for HLPR — service business, not pure e-com), and existing brand rules (lowercase "hlpr" logo, primary blue + dark navy, SVG/Lucide only, **no stock photography**).
+# Mega-Prompt v2 + Branded Intake Form
 
-Three parts, one build:
-1. Landing page rebuild (`/`)
-2. Universal audit "mega prompt" template (DB-stored, versioned)
-3. Structured intake form that feeds the mega-prompt
+Goal: ship a single universal "mega-prompt" template that can audit ANY business/niche, plus a redesigned intake form that captures every variable the prompt needs — branded, friction-light, with CRO trust elements at every step.
 
 ---
 
-## Part 1 — Landing page rebuild (`/`)
+## Part 1 — The Mega-Prompt (universal CRO audit template)
 
-### Section order (mirrors ThrillX B2B/General V1)
+Stored as a new active row in `audit_prompt_templates` (version `v2.0`, the v1.0 row gets `is_active = false`). Two tiers (`mini`, `full`) share the same intake schema; the `full` prompt unlocks more sections and deliverables.
+
+### Variables the prompt consumes (must match intake form 1:1)
 
 ```text
-1.  Sticky nav                          (keep — already correct)
-2.  Hero / above-the-fold               (REBUILD — new ATF formula)
-3.  Social proof bar                    (NEW — logos + stat row, just below fold)
-4.  Pain-point section                  (NEW — Problem / Agitate / Solve)
-5.  Value Prop #1 + visual              (NEW — alternating image/text)
-6.  Value Prop #2 + visual              (NEW)
-7.  Value Prop #3 + visual              (NEW)
-8.  Wall of Love                        (NEW — 6 testimonials, objection-tagged)
-9.  Benefit-driven differentiator       (NEW — "how you do it differently")
-10. How It Works (3 steps)              (keep, tighten)
-11. Pricing (3 tiers)                   (REWORK — anchoring + middle-option bias)
-12. FUD elimination strip               (NEW — money-back, secure, 48h, no hidden fees)
-13. Founder section                     (NEW — humanize the brand)
-14. Free CRO Score form                 (MOVED here from hero — soft fallback)
-15. Credibility stats                   (keep)
-16. FAQ                                 (EXPAND — 8 questions, niche objections)
-17. Final CTA band                      (NEW — repeat hero CTA + risk reversal)
-18. Footer                              (keep)
+{{business_name}}            {{industry}}                {{business_model}}
+{{primary_offer}}            {{dream_outcome}}           {{target_customer}}
+{{aov}}                      {{monthly_traffic}}         {{current_cvr}}
+{{primary_kpi}}              {{secondary_kpi}}
+{{pain_points}}              {{top_objections}}          {{social_proof_assets}}
+{{competitors}}              {{differentiator}}
+{{prior_attempts}}           {{traffic_sources}}
+{{website_url}}              {{additional_notes}}
 ```
 
-### Above-the-fold formula (Video 3, Trick #3 — the highest-leverage section)
+### Prompt structure (system + user template)
 
-Four mandatory pieces:
+System prompt — sets persona, frameworks, output contract:
+- Persona: "You are HLPR, a senior CRO strategist trained on the ThrillX 4-step landing page method (Hook → Problem → Solution → CTA), Hormozi's Value Equation (Dream Outcome × Likelihood ÷ Time × Effort), and 11 quick-win conversion levers (above-fold clarity, social proof density, hero contrast 3–4x, FUD strip, sticky CTA, objection-defusing testimonials, risk reversal, urgency, mobile-first, page speed, copy specificity)."
+- Rules: cite the section of the page being audited, quantify revenue impact in dollars when possible (uses `aov × monthly_traffic × CVR delta`), prioritize fixes by ICE score, output strict JSON.
+- Output contract (JSON schema): `summary`, `cro_score` (0–100), `top_issues[]` (with section, severity, evidence, recommendation, ICE, est_revenue_lift_monthly_usd), `quick_wins[]` (mini tier stops here), `framework_audit` (full tier only — Hook/Problem/Solution/CTA + Value Equation breakdown), `priority_action_plan[]` (full tier only).
 
-1. **Headline** (3–4× body size, Hormozi formula = dream outcome + functional benefit + timeframe + mechanism):
-   - *"Find the $4K–$8K/month your store is leaking — in 48 hours, with a data-driven CRO audit."*
-2. **Sub-headline** (pain → unique mechanism → time-bound benefit, per ThrillX prompt):
-   - *"Stop guessing why visitors don't convert. We audit your homepage, product pages, checkout, mobile UX, email capture, and site speed, then hand you a prioritized fix list with revenue-impact estimates within 48 hours."*
-3. **Single, obvious, benefit-led CTA**:
-   - Primary: *"Get My Revenue Leak Report — $29"* → opens checkout modal (Mini)
-   - Secondary text link below: *"Or get a free CRO score first ↓"* → smooth-scroll to free form
-4. **Supporting visual** demonstrating the deliverable — an **SVG mockup of the audit report** (stylized PDF preview: HLPR header, score gauge, scored category list, sample finding card). Pure SVG + Tailwind, no stock photos.
+User template — interpolates intake answers + scraped page data into a brief the model can act on. Includes a "Voice of Customer" section (pain_points + objections), an "Economics" section (aov × traffic for revenue math), and a "Constraints" section (prior_attempts so we don't re-recommend what failed).
 
-Plus directly under the CTA:
-- **Risk reversal**: *"100% money-back if we don't surface at least 5 revenue-impacting fixes."*
-- **Inline social proof row**: ★★★★★ "$916K Google Ads · $170K via email · 68% open rates"
+Mini tier returns 5 quick wins + score. Full tier returns the complete framework audit + 90-day action plan.
 
-### Visual hierarchy & scannability rules (Tricks #4 and #10)
+### Seeding
 
-- Headlines 3–4× body size (target: 48–57px desktop hero, 16px body).
-- Replace any paragraph >3 lines with bullet rows + Lucide icons.
-- Primary blue used for CTAs only — never for body links inside cards.
-- Bold every dollar figure, percentage, and timeframe (`$4K–$8K`, `48h`, `$29`, `100%`).
-- One accent color, max 2 type weights per section.
-
-### Pricing section rework (Trick #6 reduction + Trick #7 anchoring)
-
-- Add `compare at` strikethrough prices: Mini **$29** (was ~~$79~~), Full **$99** (was ~~$249~~).
-- Make Mini visually dominant (middle-option bias) — slightly larger card, "Most Popular" badge already exists.
-- Demote the free-score tier card to a low-prominence text link at the bottom of the pricing section ("Not ready? Get a free CRO score instead →"). Removes a competing CTA from this critical section.
-- "You save $X" called out in the headline of each card, not buried in body (Trick #7 — don't make users do math).
-
-### What gets removed (Trick #6 — reduction)
-
-- Hero URL+email form (moved down to a dedicated free-score section).
-- The 4 trust-badge chips below the hero form (redundant with new social-proof row).
-- Free-score tier card at the top of pricing (becomes a footer link in pricing).
-
-### Files touched (Part 1)
-
-- **Edit** `src/pages/Index.tsx` — restructure to the section order above.
-- **New** `src/components/landing/HeroV2.tsx`
-- **New** `src/components/landing/ReportMockup.tsx` — reusable SVG of the audit deliverable
-- **New** `src/components/landing/SocialProofBar.tsx`
-- **New** `src/components/landing/PainPointSection.tsx` — PAS framework
-- **New** `src/components/landing/ValuePropRow.tsx` — reusable alternating image/text
-- **New** `src/components/landing/WallOfLove.tsx` — 6 testimonial cards w/ objection tags + `TODO_TESTIMONIAL` placeholders
-- **New** `src/components/landing/DifferentiatorSection.tsx`
-- **New** `src/components/landing/FudStrip.tsx` — 4 trust icons
-- **New** `src/components/landing/FounderSection.tsx`
-- **New** `src/components/landing/FreeScoreSection.tsx` — relocates the URL+email form
-- **New** `src/components/landing/FinalCtaBand.tsx`
-- No new dependencies. All visuals = SVG + Lucide, per brand rules.
+Insert two new rows via the insert tool (data, not schema): `v2.0 / mini / active=true` and `v2.0 / full / active=true`. Flip the existing v1.0 rows to `is_active = false`. The `get-audit-prompt` edge function already reads `is_active=true` so n8n picks up v2 automatically.
 
 ---
 
-## Part 2 — Universal HLPR Audit Mega-Prompt (template engine)
+## Part 2 — Branded, CRO-optimized intake form
 
-One prompt that, given a filled intake form, produces a real CRO audit for **any business in any niche** — not just e-com. n8n calls this after Stripe payment lands.
+Redesign `src/components/audit/IntakeForm.tsx` from a generic 4-step form into a 5-step branded experience that doubles as a conversion asset. Every step has a trust/CRO element and the heaviest fields are deferred until commitment is high.
 
-### Where it lives
-
-- **New table** `audit_prompt_templates` (versioned, so prompts can iterate without breaking n8n):
-  - `id uuid pk`, `version text` (e.g. `v1.0`), `tier text` (`mini` | `full`), `system_prompt text`, `user_prompt_template text`, `is_active boolean`, `created_at`
-  - RLS: service-role read only; no public access.
-- **New edge function** `get-audit-prompt` — returns the active template for `?tier=mini|full`. n8n calls this instead of hard-coding the prompt, so prompt updates happen in the DB, not in n8n.
-
-### Mega-prompt structure (stored in `user_prompt_template`)
-
-Generalized beyond e-com using ThrillX prompt-doc patterns + Hormozi value equation. `{{variable}}` placeholders get filled from the intake row.
+### Step layout (progressive friction)
 
 ```text
-You are a senior CRO strategist who has audited 400+ landing pages across
-80+ niches. Deliver a {{tier}} CRO audit of {{business_name}} ({{website_url}})
-that surfaces revenue-impacting fixes the owner can act on this week.
+Step 1 — Quick Win    (lowest friction, builds momentum)
+  • Business name
+  • Industry (chips)
+  • Business model (chips)
+  → Trust element: "🔒 Takes ~2 min. 100% money-back guarantee."
 
-BUSINESS CONTEXT
-- Industry / niche: {{industry}}
-- Business model: {{business_model}}   (e-com | services | SaaS | local | info-product | other)
-- Primary offer: {{primary_offer}}
-- AOV / contract value: {{aov}}
-- Monthly traffic: {{monthly_traffic}}
-- Current conversion rate (if known): {{current_cvr}}
-- Top customer pain points: {{pain_points}}
-- Top objections heard: {{top_objections}}
-- Existing social-proof assets: {{social_proof_assets}}
-- Primary KPI the owner cares about: {{primary_kpi}}
-- What the owner has already tried: {{prior_attempts}}
+Step 2 — The Offer    (still easy)
+  • Primary offer (1 sentence)
+  • Dream outcome for your customer  ← NEW (Hormozi)
+  • Target customer (1 sentence)     ← NEW
+  → Trust element: avatar row "Join 200+ founders who got their audit"
 
-DELIVERABLE
-Use the Hormozi value equation (dream outcome × likelihood ÷ time × effort)
-as the lens for every recommendation. Apply the ThrillX 11 quick wins where
-relevant.
+Step 3 — Economics    (the "why we ask" step)
+  • AOV / contract value  (with $ revenue-impact tooltip)
+  • Monthly traffic (range chips)
+  • Current CVR (optional)
+  • Primary traffic source ← NEW (chips: Paid ads / SEO / Social / Email / Other)
+  → Trust element: "We use these numbers to estimate $ lift per fix."
 
-1. EXECUTIVE SUMMARY  (3–5 sentences, biggest leak first, dollar impact.)
-2. OVERALL CRO SCORE  (0–100, plus sub-scores: ATF, social proof, visual
-   hierarchy, offer clarity, FUD reduction, mobile UX, speed, checkout/lead
-   capture flow.)
-3. TOP {{finding_count}} FINDINGS  (each: what's wrong, why it costs money,
-   the fix, revenue-impact range, effort 1–5, priority 1–5.)
-4. PRIORITIZED ACTION PLAN  (sequenced by impact ÷ effort.)
-5. NEXT STEPS  (free → mini → full → retainer upsell tailored to KPI.)
+Step 4 — Voice of Customer    (the gold)
+  • Top 3 pain points
+  • Top objections before they buy
+  • Social proof assets you have ← NEW (chips multi: reviews, case studies, press, none)
+  • Main competitor + your differentiator ← NEW (2 short fields)
+  → Trust element: testimonial card "This is the question that unlocked our 2.3x lift" — Sarah, DTC founder
 
-STYLE
-- Direct response voice. No em dashes. No clever wordplay.
-- Bold every dollar figure, percentage, timeframe.
-- Every recommendation answers "what's in it for me" for the visitor.
-- Mark unsubstantiated claims [NEEDS VERIFICATION] rather than inventing.
-
-TIER RULES
-- mini → 10–15 findings, 1500–2500 words.
-- full → 25+ findings, 4000–6000 words, include wireframe descriptions for
-  the top 5 fixes.
+Step 5 — Goals & Anything Else    (commitment + finish line)
+  • Primary KPI (chips)
+  • Secondary KPI (chips, optional) ← NEW
+  • What you've already tried (optional)
+  • Anything else (optional)
+  → Trust element: green checkmark stack — "✓ Encrypted  ✓ Never shared  ✓ Delivered in 24h"
+  → CTA: "Continue to Secure Checkout →"
 ```
 
-### End-to-end flow
+### Branding & UX upgrades (vs. current form)
+
+- Brand: HLPR primary blue header band per step, rounded chip-style selectors (replace native `<select>` for Industry, Traffic, Traffic source), iconography from `lucide-react` per step, smooth step transitions.
+- Friction reducers: chips/radios over text where possible; only 4 fields require typing per step max; tooltips kept for "why we ask" copy.
+- CRO trust elements per step (see above) — mini testimonial / guarantee / encryption row rotated so the user always sees a reason to keep going.
+- Persistent footer: progress bar (already exists), money-back badge, tier + price ("Full Audit — $99 • 24h delivery").
+- Mobile: chips wrap to 2-col, sticky bottom CTA bar on small screens.
+- Save-on-blur to `localStorage` so a refresh doesn't lose answers (key: `hlpr_intake_draft`).
+- Validation: inline, friendly, no red until blur.
+
+### Field → Prompt variable mapping (1:1 contract)
 
 ```text
-Customer fills intake → Stripe checkout → webhook → n8n
-n8n: GET active prompt from get-audit-prompt
-n8n: GET intake answers from audit_requests by stripe_session_id
-n8n: substitute {{vars}} → call LLM → render PDF → email
-n8n: PATCH audit_requests.payment_status = 'completed'
+business_name        → {{business_name}}
+industry             → {{industry}}
+business_model       → {{business_model}}
+primary_offer        → {{primary_offer}}
+dream_outcome        → {{dream_outcome}}            NEW
+target_customer      → {{target_customer}}          NEW
+aov                  → {{aov}}
+monthly_traffic      → {{monthly_traffic}}
+current_cvr          → {{current_cvr}}
+traffic_sources      → {{traffic_sources}}          NEW
+pain_points          → {{pain_points}}
+top_objections       → {{top_objections}}
+social_proof_assets  → {{social_proof_assets}}      NEW
+competitors          → {{competitors}}              NEW
+differentiator       → {{differentiator}}           NEW
+primary_kpi          → {{primary_kpi}}
+secondary_kpi        → {{secondary_kpi}}            NEW
+prior_attempts       → {{prior_attempts}}
+additional_notes     → {{additional_notes}}
+website_url          → {{website_url}}              (already collected in modal step 1)
 ```
 
-You stay in full control: edit the prompt row → next audit uses the new version. No n8n redeploy.
+---
 
-### Files / DB touched (Part 2)
+## Part 3 — Backend wiring
 
-- **New migration** — `audit_prompt_templates` table + RLS + seed v1.0 mini & full rows.
-- **New edge function** `supabase/functions/get-audit-prompt/index.ts` (service-role only).
-- No frontend admin UI in v1 — edit the row directly via the backend view. Admin page can come later if you want it.
+- `IntakeAnswers` interface in `IntakeForm.tsx` extended with the 7 new fields above.
+- `create-audit-checkout/index.ts`: extend the `IntakeAnswers` interface and the field-length-capped allowlist to include the new keys. Already stores everything to `audit_requests.intake_answers` as JSONB — no schema change needed (jsonb is open).
+- `audit_prompt_templates`: insert v2 mini + v2 full rows; deactivate v1. n8n keeps using `get-audit-prompt?tier=…` and now receives v2.
+- No DB migration needed; only data inserts.
 
 ---
 
-## Part 3 — Universal intake form
+## Technical details
 
-Captures every variable the mega-prompt needs. Replaces the current 2-field hero form **for paid tiers only** — the free CRO score keeps the simple URL+email form (low friction is correct there).
+- Files created/edited:
+  - edit `src/components/audit/IntakeForm.tsx` — restructure to 5 steps, add chip selectors, trust elements, new fields, localStorage draft.
+  - edit `src/components/AuditCheckoutModal.tsx` — minor: pass tier label/price into IntakeForm footer.
+  - edit `supabase/functions/create-audit-checkout/index.ts` — extend `IntakeAnswers` keys.
+  - data insert (no migration) — seed v2 mini + full prompts in `audit_prompt_templates`, deactivate v1.
+- The `get-audit-prompt` edge function and DB schema do not change.
+- Output contract for n8n stays JSON; n8n's templating engine substitutes `{{variable}}` from the audit_request row's `intake_answers` jsonb + top-level `website_url`.
 
-### Where it appears
-
-- **Mini & Full purchases**: shown inside `AuditCheckoutModal` as **Step 1**, *before* Stripe. Pay button stays disabled until intake validates. Answers stored on the `audit_requests` row so n8n has them when the webhook fires.
-- **Free CRO score**: keep the 2-field form (URL + email) unchanged.
-
-### Fields (~12 questions, ~2 minutes)
-
-1. **Business**: Website URL · Business name · Industry (single-select + "Other") · Model (e-com/services/SaaS/local/info/other)
-2. **Offer & economics**: Primary offer (1 sentence) · AOV/contract value · Monthly traffic (range select) · Current CVR (optional)
-3. **Customer insight**: Top 3 customer pain points · Top objections you hear · What you've already tried (optional)
-4. **Goals**: Primary KPI (radio) · Anything else? (optional)
-5. **Contact**: Email (prefilled) · Best follow-up contact (optional)
-
-### Friction-reduction patterns (from videos)
-
-- Single column, big inputs, generous spacing.
-- Multi-step with progress indicator ("Step 2 of 4").
-- Inline validation (no form-wide error on submit).
-- "Why we ask" tooltips on harder fields (AOV, CVR).
-- Risk-reversal copy directly above the pay button.
-
-### Files touched (Part 3)
-
-- **New migration** — add `intake_answers jsonb`, `intake_completed_at timestamptz` to `audit_requests`.
-- **New** `src/components/audit/IntakeForm.tsx` — multi-step with progress bar.
-- **Edit** `src/components/AuditCheckoutModal.tsx` — IntakeForm becomes Step 1; Stripe redirect becomes Step 2.
-- **Edit** `supabase/functions/create-audit-checkout/index.ts` — accept and persist intake payload.
-
----
-
-## Summary of everything created/edited
-
-**Frontend** (12 new components, 2 edits)
-- New: `HeroV2`, `ReportMockup`, `SocialProofBar`, `PainPointSection`, `ValuePropRow`, `WallOfLove`, `DifferentiatorSection`, `FudStrip`, `FounderSection`, `FreeScoreSection`, `FinalCtaBand`, `IntakeForm`
-- Edit: `Index.tsx`, `AuditCheckoutModal.tsx`
-
-**Backend (Lovable Cloud)**
-- New table: `audit_prompt_templates` (versioned prompts, RLS = service-role only)
-- New columns on `audit_requests`: `intake_answers jsonb`, `intake_completed_at timestamptz`
-- New edge function: `get-audit-prompt`
-- Edit edge function: `create-audit-checkout` (persists intake before Stripe redirect)
-
-**Out of scope (n8n owns)**
-- LLM call, PDF render, email send, `payment_status` flip. We just hand n8n clean data + the active prompt.
-
-After approval I'll build Part 1 (landing page) first so you can see it live, then Parts 2 & 3 in the same loop. End state: new ATF → click pay → multi-step intake → Stripe → thank-you page → n8n picks it up with everything it needs.
