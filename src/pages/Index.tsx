@@ -27,6 +27,9 @@ import FudStrip from "@/components/landing/FudStrip";
 import FounderSection from "@/components/landing/FounderSection";
 import FreeScoreSection from "@/components/landing/FreeScoreSection";
 import FinalCtaBand from "@/components/landing/FinalCtaBand";
+import illustrationJourney from "@/assets/illustration-journey.png";
+import illustrationRevenue from "@/assets/illustration-revenue.png";
+import illustrationPlaybook from "@/assets/illustration-playbook.png";
 
 function Logo({ className = "" }: { className?: string }) {
   return (
@@ -411,6 +414,8 @@ export default function Index() {
           "Full funnel from ad click to confirmation",
         ]}
         icon={Search}
+        image={illustrationJourney}
+        imageAlt="Visitors flowing through a conversion funnel into revenue"
       />
 
       <ValuePropRow
@@ -424,6 +429,8 @@ export default function Index() {
           "Sequenced by impact ÷ effort",
         ]}
         icon={LineChart}
+        image={illustrationRevenue}
+        imageAlt="Bar chart trending upward with dollar amounts per fix"
       />
 
       <ValuePropRow
@@ -436,6 +443,8 @@ export default function Index() {
           "Long-term structural fixes flagged separately",
         ]}
         icon={ListChecks}
+        image={illustrationPlaybook}
+        imageAlt="Prioritized stack of fix cards with the top one highlighted"
       />
 
       <WallOfLove />
