@@ -1,20 +1,31 @@
-import { createClient } from "jsr:@supabase/supabase-js@2";
-import { corsHeaders } from "jsr:@supabase/supabase-js@2/cors";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 
 interface IntakeAnswers {
+  business_name?: string;
   industry?: string;
   business_model?: string;
   primary_offer?: string;
+  dream_outcome?: string;
+  target_customer?: string;
   aov?: string;
   monthly_traffic?: string;
   current_cvr?: string;
+  traffic_sources?: string;
   pain_points?: string;
   top_objections?: string;
   social_proof_assets?: string;
+  competitors?: string;
+  differentiator?: string;
   primary_kpi?: string;
+  secondary_kpi?: string;
   prior_attempts?: string;
   additional_notes?: string;
-  business_name?: string;
   contact_phone?: string;
 }
 

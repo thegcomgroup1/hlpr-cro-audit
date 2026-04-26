@@ -163,7 +163,12 @@ export default function AuditCheckoutModal({ open, tier, onClose }: Props) {
           </form>
         ) : (
           <div className="mt-6">
-            <IntakeForm onComplete={handleIntakeComplete} submitting={submitting} />
+            <IntakeForm
+              onComplete={handleIntakeComplete}
+              submitting={submitting}
+              tierLabel={`${meta.label} Audit`}
+              tierPrice={meta.price}
+            />
             {error && (
               <p role="alert" className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
             )}

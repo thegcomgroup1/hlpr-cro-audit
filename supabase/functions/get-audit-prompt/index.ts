@@ -1,5 +1,10 @@
-import { createClient } from "jsr:@supabase/supabase-js@2";
-import { corsHeaders } from "jsr:@supabase/supabase-js@2/cors";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 
 /**
  * Returns the active mega-prompt for a given tier.
