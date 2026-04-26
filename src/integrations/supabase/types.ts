@@ -14,11 +14,49 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_prompt_templates: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          notes: string | null
+          system_prompt: string
+          tier: string
+          updated_at: string
+          user_prompt_template: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          system_prompt: string
+          tier: string
+          updated_at?: string
+          user_prompt_template: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          system_prompt?: string
+          tier?: string
+          updated_at?: string
+          user_prompt_template?: string
+          version?: string
+        }
+        Relationships: []
+      }
       audit_requests: {
         Row: {
           created_at: string
           email: string
           id: string
+          intake_answers: Json | null
+          intake_completed_at: string | null
           name: string
           payment_status: string
           phone: string
@@ -30,6 +68,8 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          intake_answers?: Json | null
+          intake_completed_at?: string | null
           name: string
           payment_status?: string
           phone: string
@@ -41,6 +81,8 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          intake_answers?: Json | null
+          intake_completed_at?: string | null
           name?: string
           payment_status?: string
           phone?: string
