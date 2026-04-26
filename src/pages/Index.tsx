@@ -1,12 +1,5 @@
 import { useState } from "react";
 import {
-  Search,
-  BarChart3,
-  ShoppingCart,
-  DollarSign,
-  Globe,
-  FileText,
-  Wrench,
   Check,
   ChevronDown,
   ChevronUp,
@@ -15,15 +8,25 @@ import {
   ExternalLink,
   TrendingUp,
   Target,
-  Zap,
-  Award,
-  Clock,
-  FileCheck,
-  LayoutGrid,
+  DollarSign,
+  Globe,
+  FileText,
+  Wrench,
+  Search,
+  LineChart,
+  ListChecks,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 import AuditCheckoutModal, { type AuditTier } from "@/components/AuditCheckoutModal";
+import HeroV2 from "@/components/landing/HeroV2";
+import SocialProofBar from "@/components/landing/SocialProofBar";
+import PainPointSection from "@/components/landing/PainPointSection";
+import ValuePropRow from "@/components/landing/ValuePropRow";
+import WallOfLove from "@/components/landing/WallOfLove";
+import DifferentiatorSection from "@/components/landing/DifferentiatorSection";
+import FudStrip from "@/components/landing/FudStrip";
+import FounderSection from "@/components/landing/FounderSection";
+import FreeScoreSection from "@/components/landing/FreeScoreSection";
+import FinalCtaBand from "@/components/landing/FinalCtaBand";
 
 function Logo({ className = "" }: { className?: string }) {
   return (
@@ -31,190 +34,36 @@ function Logo({ className = "" }: { className?: string }) {
   );
 }
 
-function HeroSection() {
-  const [url, setUrl] = useState("");
-  const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url.trim() || !email.trim()) return;
-    setSubmitting(true);
-    try {
-      const { error } = await supabase.functions.invoke("cro-score", {
-        body: { url: url.trim(), email: email.trim() },
-      });
-      if (error) throw error;
-      toast({
-        title: "Request received!",
-        description: "We'll email your CRO score shortly.",
-      });
-      setUrl("");
-      setEmail("");
-    } catch (err) {
-      toast({
-        title: "Something went wrong",
-        description: "Please check your URL and email, then try again.",
-        variant: "destructive",
-      });
-    }
-    setSubmitting(false);
-  };
-
-  return (
-    <section className="relative overflow-hidden bg-background">
-      <div className="mx-auto max-w-3xl px-5 pb-20 pt-28 text-center sm:px-8 md:pt-36 md:pb-28">
-        <h1
-          className="text-4xl font-extrabold leading-[1.08] tracking-tight text-secondary sm:text-5xl md:text-[3.5rem]"
-          style={{ textWrap: "balance" } as React.CSSProperties}
-        >
-          Your Store Is Leaking Revenue.
-          <br className="hidden sm:block" /> We'll Show You Where.
-        </h1>
-        <p
-          className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground"
-          style={{ textWrap: "pretty" } as React.CSSProperties}
-        >
-          Get a data-driven CRO audit of your e-commerce site. We analyze your
-          homepage, product pages, checkout flow, mobile experience, email
-          capture, and site speed — then give you a prioritized fix list with
-          estimated revenue impact.
-        </p>
-
-        <form
-          onSubmit={handleSubmit}
-          className="mx-auto mt-10 flex max-w-lg flex-col gap-3 sm:flex-row"
-        >
-          <input
-            type="url"
-            required
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter your store URL"
-            className="h-12 flex-1 rounded-lg border border-input bg-background px-4 text-base shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2"
-          />
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your email address"
-            className="h-12 flex-1 rounded-lg border border-input bg-background px-4 text-base shadow-sm outline-none ring-ring transition placeholder:text-muted-foreground focus:ring-2"
-          />
-          <button
-            type="submit"
-            disabled={submitting}
-            className="h-12 shrink-0 rounded-lg bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md transition active:scale-[0.97] hover:shadow-lg disabled:opacity-60"
-          >
-            {submitting ? "Submitting…" : "Get My Free CRO Score"}
-          </button>
-        </form>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Takes 30 seconds. No credit card required.
-        </p>
-
-        {/* Trust badges */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Award size={14} /> Trusted by e-commerce brands
-          </span>
-          <span className="hidden h-4 w-px bg-border sm:block" />
-          <span className="flex items-center gap-1.5">
-            <Zap size={14} /> 50+ conversion factors
-          </span>
-          <span className="hidden h-4 w-px bg-border sm:block" />
-          <span className="flex items-center gap-1.5">
-            <Target size={14} /> Data-driven insights
-          </span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProblemSection() {
-  const stats = [
-    {
-      value: "0.5–3%",
-      label: "Average e-commerce conversion rate",
-      icon: BarChart3,
-    },
-    { value: "70%", label: "Cart abandonment rate", icon: ShoppingCart },
-    {
-      value: "$4K–$8K/mo",
-      label: "Revenue most stores leave on the table",
-      icon: DollarSign,
-    },
-  ];
-
-  return (
-    <section className="bg-secondary text-secondary-foreground">
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-28">
-        <h2
-          className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl"
-          style={{ textWrap: "balance" } as React.CSSProperties}
-        >
-          97% of Your Visitors Leave Without Buying
-        </h2>
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {stats.map((s) => (
-            <div
-              key={s.value}
-              className="rounded-xl bg-white/[0.07] p-8 backdrop-blur-sm"
-            >
-              <s.icon className="mx-auto mb-4 opacity-60" size={28} />
-              <p className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-                {s.value}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed opacity-75">
-                {s.label}
-              </p>
-            </div>
-          ))}
-        </div>
-        <p
-          className="mx-auto mt-10 max-w-2xl text-base leading-relaxed opacity-75"
-          style={{ textWrap: "pretty" } as React.CSSProperties}
-        >
-          The difference between a 1% and 3% conversion rate on a site with
-          10,000 monthly visitors is{" "}
-          <strong className="text-primary-foreground">
-            $20,000+ per year
-          </strong>{" "}
-          in additional revenue.
-        </p>
-      </div>
-    </section>
-  );
-}
-
 function HowItWorksSection() {
   const steps = [
     {
       num: 1,
-      title: "Enter Your URL",
-      desc: "We crawl your site and analyze 50+ conversion factors across 6 categories.",
+      title: "Tell us about your business",
+      desc: "Answer 12 quick questions so we audit through your customers' eyes — not a generic checklist.",
       icon: Globe,
     },
     {
       num: 2,
-      title: "Get Your Score",
-      desc: "Receive a detailed report with section-by-section scoring, findings, and fix recommendations.",
+      title: "We hand-audit your site",
+      desc: "We score 50+ conversion factors across 6 categories and rank fixes by impact ÷ effort.",
       icon: FileText,
     },
     {
       num: 3,
-      title: "Fix & Grow",
-      desc: "Use the report to fix issues yourself, or hire HLPR to implement everything for you.",
+      title: "Ship fixes that pay you back",
+      desc: "You get a prioritized playbook with revenue estimates. Implement yourself or hire us to do it.",
       icon: Wrench,
     },
   ];
 
   return (
-    <section className="bg-muted">
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-28">
-        <h2 className="text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
-          How It Works
+    <section className="bg-muted/40">
+      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-24">
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+          How it works
+        </p>
+        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
+          From paying for traffic to converting it — in 3 steps.
         </h2>
         <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
           {steps.map((s) => (
@@ -222,11 +71,7 @@ function HowItWorksSection() {
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground shadow-md">
                 {s.num}
               </div>
-              <s.icon
-                className="mt-5 text-primary"
-                size={32}
-                strokeWidth={1.5}
-              />
+              <s.icon className="mt-5 text-primary" size={32} strokeWidth={1.5} />
               <h3 className="mt-4 text-lg font-bold text-secondary">
                 {s.title}
               </h3>
@@ -247,31 +92,21 @@ function HowItWorksSection() {
 type Tier = {
   name: string;
   price: string;
+  compareAt?: string;
+  saveLabel?: string;
   features: string[];
   cta: string;
   highlight: boolean;
-  tier?: AuditTier;
-  href?: string;
+  tier: AuditTier;
 };
 
 function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => void }) {
   const tiers: Tier[] = [
     {
-      name: "CRO Score",
-      price: "FREE",
-      features: [
-        "3–5 key findings",
-        "Overall score out of 100",
-        "Top 3 quick wins",
-        "Delivered instantly by email",
-      ],
-      cta: "Get Free Score",
-      href: "#hero",
-      highlight: false,
-    },
-    {
       name: "Mini Audit",
-      price: "$29",
+      price: "29",
+      compareAt: "79",
+      saveLabel: "Save $50",
       features: [
         "10–15 detailed findings",
         "Section-by-section scoring",
@@ -285,7 +120,9 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
     },
     {
       name: "Full CRO Audit",
-      price: "$99",
+      price: "99",
+      compareAt: "249",
+      saveLabel: "Save $150",
       features: [
         "25+ detailed findings",
         "Complete page-by-page analysis",
@@ -302,67 +139,90 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
 
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-28">
-        <h2 className="text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
-          Choose Your Audit Level
+      <div className="mx-auto max-w-4xl px-5 py-20 text-center sm:px-8 md:py-28">
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+          Pricing
+        </p>
+        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
+          Two ways to find your revenue leak.
         </h2>
-        <div className="mt-14 grid gap-8 sm:grid-cols-3">
+        <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
+          One-time payment. No subscriptions. 100% refund if we don't find 5+
+          revenue-impacting fixes.
+        </p>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {tiers.map((t) => (
             <div
               key={t.name}
               className={`relative flex flex-col rounded-2xl border bg-card p-8 text-left shadow-sm transition hover:shadow-md ${
                 t.highlight
-                  ? "border-primary ring-2 ring-primary/20"
+                  ? "border-primary ring-2 ring-primary/20 sm:scale-[1.02]"
                   : "border-border"
               }`}
             >
               {t.highlight && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
                   Most Popular
                 </span>
               )}
               <h3 className="text-lg font-bold text-secondary">{t.name}</h3>
-              <p className="mt-2 text-3xl font-extrabold tracking-tight text-secondary">
-                {t.price}
-              </p>
+
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="text-4xl font-extrabold tracking-tight text-secondary">
+                  ${t.price}
+                </span>
+                {t.compareAt && (
+                  <span className="text-base font-medium text-muted-foreground line-through">
+                    ${t.compareAt}
+                  </span>
+                )}
+              </div>
+              {t.saveLabel && (
+                <p className="mt-1 text-xs font-bold uppercase tracking-widest text-primary">
+                  {t.saveLabel}
+                </p>
+              )}
+
               <ul className="mt-6 flex flex-1 flex-col gap-3">
                 {t.features.map((f) => (
                   <li
                     key={f}
                     className="flex items-start gap-2 text-sm leading-snug text-muted-foreground"
                   >
-                    <Check size={16} className="mt-0.5 shrink-0 text-primary" />
+                    <Check
+                      size={16}
+                      className="mt-0.5 shrink-0 text-primary"
+                      strokeWidth={2.5}
+                    />
                     {f}
                   </li>
                 ))}
               </ul>
-              {t.tier ? (
-                <button
-                  type="button"
-                  onClick={() => onSelectTier(t.tier!)}
-                  className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
-                    t.highlight
-                      ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
-                      : "border border-primary text-primary hover:bg-primary/5"
-                  }`}
-                >
-                  {t.cta}
-                </button>
-              ) : (
-                <a
-                  href={t.href}
-                  className={`mt-8 block rounded-lg py-3 text-center text-sm font-semibold transition active:scale-[0.97] ${
-                    t.highlight
-                      ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
-                      : "border border-primary text-primary hover:bg-primary/5"
-                  }`}
-                >
-                  {t.cta}
-                </a>
-              )}
+              <button
+                type="button"
+                onClick={() => onSelectTier(t.tier)}
+                className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-bold transition active:scale-[0.97] ${
+                  t.highlight
+                    ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
+                    : "border border-primary text-primary hover:bg-primary/5"
+                }`}
+              >
+                {t.cta}
+              </button>
             </div>
           ))}
         </div>
+
+        <p className="mt-10 text-sm text-muted-foreground">
+          Not ready?{" "}
+          <a
+            href="#free-score"
+            className="font-semibold text-primary transition hover:text-primary/80"
+          >
+            Get a free CRO score instead →
+          </a>
+        </p>
       </div>
     </section>
   );
@@ -373,25 +233,21 @@ function CredibilitySection() {
     { value: "$916K", label: "in Google Ads managed", icon: TrendingUp },
     { value: "$341K", label: "in Meta Ads managed", icon: Target },
     { value: "68%", label: "email open rates achieved", icon: Mail },
-    {
-      value: "$170K",
-      label: "revenue generated through email",
-      icon: DollarSign,
-    },
+    { value: "$170K", label: "revenue generated through email", icon: DollarSign },
   ];
 
   return (
-    <section className="bg-muted">
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-28">
-        <h2 className="text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
-          Why Trust HLPR?
+    <section className="bg-muted/40">
+      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-24">
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+          Track record
+        </p>
+        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
+          Numbers we've actually moved.
         </h2>
-        <div className="mt-14 grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
           {stats.map((s) => (
-            <div
-              key={s.value}
-              className="rounded-xl bg-card p-6 shadow-sm"
-            >
+            <div key={s.value} className="rounded-xl bg-card p-6 shadow-sm">
               <s.icon
                 className="mx-auto mb-3 text-primary"
                 size={24}
@@ -414,30 +270,49 @@ function CredibilitySection() {
 function FAQSection() {
   const faqs = [
     {
-      q: "What do you analyze?",
-      a: "Homepage, product pages, checkout flow, mobile experience, email capture strategy, and site speed/technical performance.",
+      q: "Does this work for my niche?",
+      a: "Yes. Our intake form captures industry, business model (e-com, services, SaaS, local, info), AOV, and customer pain points so the audit is shaped to your business — not a generic e-com checklist.",
     },
     {
-      q: "How is this different from a free tool like PageSpeed Insights?",
-      a: "We analyze the full customer journey, not just technical speed. We look at UX, copy, offer strategy, trust signals, and conversion flow — things no automated tool can evaluate.",
+      q: "What if I don't have a website yet?",
+      a: "If you have any live page — landing page, booking page, even a Linktree — we can audit it. If you have nothing live, book a strategy call and we'll scope the right starting point.",
+    },
+    {
+      q: "How is this different from PageSpeed Insights or a free tool?",
+      a: "Free tools score technical speed. We audit the full customer journey: copy, offer clarity, social proof placement, FUD reduction, mobile UX, and checkout flow — judgment calls no automated tool can make.",
+    },
+    {
+      q: "What if you don't find anything actionable?",
+      a: "100% refund. If we don't surface at least 5 revenue-impacting fixes, you don't pay. We've never had to issue this refund.",
+    },
+    {
+      q: "Who actually runs the audit?",
+      a: "Tim, founder of hlpr — 10+ years running paid traffic, email, and CRO across $1M+ in managed ad spend. No outsourced contractors, no AI-generated reports.",
+    },
+    {
+      q: "How long does it take?",
+      a: "Mini Audit: within 48 hours. Full Audit: within 5 business days. We start as soon as you complete the intake form.",
     },
     {
       q: "What if I want you to fix what you find?",
-      a: "We offer full implementation services starting at $1,500/month. Most audit buyers become retainer clients because the ROI is clear from the report.",
+      a: "We offer full implementation services starting at $1,500/month. Most audit buyers become retainer clients because the ROI from the report makes the case for itself.",
     },
     {
       q: "Is the free score actually useful?",
-      a: "Yes. You'll get your overall conversion health score and the top 3 things killing your conversions right now. Most stores can implement at least one fix immediately.",
+      a: "Yes — you'll get your overall conversion health score plus the top 3 fixes killing your conversions right now. Most stores can implement at least one immediately.",
     },
   ];
 
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-2xl px-5 py-20 sm:px-8 md:py-28">
-        <h2 className="text-center text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
-          Frequently Asked Questions
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-primary">
+          FAQ
+        </p>
+        <h2 className="mt-3 text-center text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
+          Frequently asked questions
         </h2>
         <div className="mt-12 divide-y divide-border">
           {faqs.map((f, i) => (
@@ -448,9 +323,9 @@ function FAQSection() {
               >
                 {f.q}
                 {open === i ? (
-                  <ChevronUp size={18} className="shrink-0 ml-4" />
+                  <ChevronUp size={18} className="ml-4 shrink-0" />
                 ) : (
-                  <ChevronDown size={18} className="shrink-0 ml-4" />
+                  <ChevronDown size={18} className="ml-4 shrink-0" />
                 )}
               </button>
               {open === i && (
@@ -510,8 +385,8 @@ export default function Index() {
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Sticky nav */}
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-5 sm:px-8">
+      <nav className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:px-8">
           <Logo className="text-xl text-primary" />
           <a
             href="#pricing"
@@ -522,16 +397,61 @@ export default function Index() {
         </div>
       </nav>
 
-      <div id="hero">
-        <HeroSection />
-      </div>
-      <ProblemSection />
+      <HeroV2 onSelectTier={setModalTier} />
+      <SocialProofBar />
+      <PainPointSection />
+
+      <ValuePropRow
+        eyebrow="Customer-journey audit"
+        headline="See your store the way your customers actually do."
+        body="We audit homepage, product pages, mobile UX, and checkout flow as a single connected journey — not isolated pages — so we catch the friction that costs you the sale."
+        bullets={[
+          "6 categories scored 0–100",
+          "Mobile + desktop reviewed separately",
+          "Full funnel from ad click to confirmation",
+        ]}
+        icon={Search}
+      />
+
+      <ValuePropRow
+        reverse
+        eyebrow="Revenue-impact estimates"
+        headline="Every finding comes with a dollar figure attached."
+        body="We don't just say 'fix this.' We tell you what it's costing you and what it'll be worth — so you can sequence your roadmap by impact, not opinion."
+        bullets={[
+          "Estimated monthly revenue lift per fix",
+          "Effort score 1–5 for engineering",
+          "Sequenced by impact ÷ effort",
+        ]}
+        icon={LineChart}
+      />
+
+      <ValuePropRow
+        eyebrow="Prioritized action plan"
+        headline="A playbook your team can ship this sprint."
+        body="No 100-item dump. We give you the top fixes ranked by ROI, with the wording, layout, and offers your visitors actually need to convert."
+        bullets={[
+          "Top 3 quick wins for week 1",
+          "Mid-priority improvements for the next sprint",
+          "Long-term structural fixes flagged separately",
+        ]}
+        icon={ListChecks}
+      />
+
+      <WallOfLove />
+      <DifferentiatorSection />
       <HowItWorksSection />
+
       <div id="pricing">
         <PricingSection onSelectTier={setModalTier} />
       </div>
+
+      <FudStrip />
+      <FounderSection />
+      <FreeScoreSection />
       <CredibilitySection />
       <FAQSection />
+      <FinalCtaBand onSelectTier={setModalTier} />
       <Footer />
 
       <AuditCheckoutModal
