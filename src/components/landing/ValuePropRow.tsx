@@ -6,6 +6,9 @@ interface Props {
   body: string;
   bullets: string[];
   icon: LucideIcon;
+  /** Optional illustration. Falls back to the icon tile when omitted. */
+  image?: string;
+  imageAlt?: string;
   reverse?: boolean;
 }
 
@@ -15,6 +18,8 @@ export default function ValuePropRow({
   body,
   bullets,
   icon: Icon,
+  image,
+  imageAlt,
   reverse = false,
 }: Props) {
   return (
