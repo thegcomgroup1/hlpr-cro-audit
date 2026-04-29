@@ -111,7 +111,7 @@ function HowItWorksSection() {
 
   return (
     <section className="bg-muted/40">
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-24">
+      <div className="mx-auto max-w-5xl px-5 py-12 text-center sm:px-8 md:py-16">
         <div className="flex justify-center">
           <AuditArc size={28} className="text-primary/70" />
         </div>
@@ -121,7 +121,7 @@ function HowItWorksSection() {
         <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
           From paying for traffic to converting it — in 3 steps.
         </h2>
-        <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
+        <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-8">
           {steps.map((s) => (
             <div key={s.num} className="flex flex-col items-center">
               <div className="relative">
@@ -201,7 +201,7 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
 
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-4xl px-5 py-20 text-center sm:px-8 md:py-28">
+      <div className="mx-auto max-w-4xl px-5 py-14 text-center sm:px-8 md:py-20">
         <div className="flex justify-center">
           <AuditArc size={28} className="text-primary/70" />
         </div>
@@ -216,7 +216,7 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
           revenue-impacting fixes.
         </p>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {tiers.map((t) => (
             <div
               key={t.name}
@@ -273,7 +273,7 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
               <button
                 type="button"
                 onClick={() => onSelectTier(t.tier)}
-                className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-bold transition active:scale-[0.97] ${
+                className={`mt-6 block w-full rounded-lg py-3 text-center text-sm font-bold transition active:scale-[0.97] ${
                   t.highlight
                     ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
                     : "border border-primary text-primary hover:bg-primary/5"
@@ -285,7 +285,7 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
           ))}
         </div>
 
-        <p className="mt-10 text-sm text-muted-foreground">
+        <p className="mt-8 text-sm text-muted-foreground">
           Not ready?{" "}
           <a
             href="#free-score"
@@ -309,14 +309,14 @@ function CredibilitySection() {
 
   return (
     <section className="bg-muted/40">
-      <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-24">
+      <div className="mx-auto max-w-5xl px-5 py-12 text-center sm:px-8 md:py-16">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
           Track record
         </p>
         <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
           Numbers we've actually moved.
         </h2>
-        <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
           {stats.map((s) => (
             <div key={s.value} className="rounded-xl bg-card p-6 shadow-sm">
               <s.icon
@@ -378,14 +378,14 @@ function FAQSection() {
 
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-2xl px-5 py-20 sm:px-8 md:py-28">
+      <div className="mx-auto max-w-2xl px-5 py-14 sm:px-8 md:py-20">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-primary">
           FAQ
         </p>
         <h2 className="mt-3 text-center text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
           Frequently asked questions
         </h2>
-        <div className="mt-12 divide-y divide-border">
+        <div className="mt-8 divide-y divide-border">
           {faqs.map((f, i) => (
             <div key={i}>
               <button
@@ -415,7 +415,7 @@ function FAQSection() {
 function Footer() {
   return (
     <footer className="border-t border-border bg-secondary text-secondary-foreground">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-5 py-12 text-center sm:px-8">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-5 py-10 text-center sm:px-8">
         <p className="border-b border-border/30 pb-5 text-xs text-secondary-foreground/70">
           Sister brands:{" "}
           <a
