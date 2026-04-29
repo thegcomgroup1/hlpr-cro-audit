@@ -20,7 +20,7 @@ export default function FinalCtaBand({ onSelectTier }: Props) {
           style={{ textWrap: "pretty" } as React.CSSProperties}
         >
           Get your prioritized fix list with revenue-impact estimates within{" "}
-          <span className="font-bold text-primary-foreground">48 hours</span> —
+          <span className="font-bold text-primary-foreground">60 minutes</span> —
           backed by a <span className="font-bold text-primary-foreground">100% money-back guarantee</span>.
         </p>
 

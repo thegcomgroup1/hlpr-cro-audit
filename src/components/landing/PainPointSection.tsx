@@ -51,7 +51,7 @@ export default function PainPointSection() {
             that will recover the revenue you're already paying to acquire.
           </p>
           <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-            That's exactly what we deliver in 48 hours
+            That's exactly what we deliver in 60 minutes
             <ArrowRight size={14} />
           </p>
         </div>
