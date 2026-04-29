@@ -16,16 +16,16 @@ interface PortfolioItem {
 }
 
 const PORTFOLIO: PortfolioItem[] = [
-  { brand: "Eden Cove", category: "Sanctuary / retreat", screenshot: edenCove },
-  { brand: "Voir Homme", category: "Luxury fashion ecom", screenshot: voirChat },
-  { brand: "Kaizen Beauty", category: "Premium nail salon", screenshot: kaizen },
-  { brand: "Streaming4YouNow", category: "Streaming service", screenshot: streaming },
-  { brand: "Dunamis Marketing", category: "Christian media agency", screenshot: dunamis },
-  { brand: "Real Estate Connect", category: "Real estate platform", screenshot: realestate },
   { brand: "Koven", category: "Premium cat furniture ecom", screenshot: koven },
-  { brand: "Luna's Place", category: "Premium dog beds & sofas ecom", screenshot: lunasPlace },
+  { brand: "Voir Homme", category: "Luxury fashion ecom", screenshot: voirChat },
   { brand: "LifeWork Ministries", category: "Ministry / counseling", screenshot: lifework },
+  { brand: "Streaming4YouNow", category: "Streaming service", screenshot: streaming },
+  { brand: "Luna's Place", category: "Premium dog beds & sofas ecom", screenshot: lunasPlace },
+  { brand: "Kaizen Beauty", category: "Premium nail salon", screenshot: kaizen },
+  { brand: "Eden Cove", category: "Sanctuary / retreat", screenshot: edenCove },
+  { brand: "Real Estate Connect", category: "Real estate platform", screenshot: realestate },
   { brand: "Saved Singles Summit", category: "Christian community", screenshot: savedSingles },
+  { brand: "Dunamis Marketing", category: "Christian media agency", screenshot: dunamis },
 ];
 
 export default function PortfolioStrip() {
