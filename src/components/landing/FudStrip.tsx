@@ -13,8 +13,8 @@ const ITEMS = [
   },
   {
     icon: Clock,
-    title: "48-hour delivery",
-    body: "Mini audit lands in your inbox within 2 business days.",
+    title: "60-minute delivery",
+    body: "Mini audit lands in your inbox within the hour. Full Audit in 24 hours.",
   },
   {
     icon: Receipt,

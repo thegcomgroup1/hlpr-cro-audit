@@ -14,7 +14,7 @@ const ROWS: Array<{ label: string; others: string; us: string }> = [
   {
     label: "Speed",
     others: "2–4 weeks for a real audit",
-    us: "48-hour turnaround",
+    us: "60-minute Mini Audit · 24-hour Full Audit",
   },
   {
     label: "Risk",

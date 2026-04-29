@@ -31,7 +31,7 @@ export default function HeroV2({ onSelectTier }: Props) {
           >
             Find the{" "}
             <span className="text-primary">$4K–$8K/month</span> your store is
-            leaking — in 48 hours.
+            leaking — in 60 minutes.
           </h1>
 
           {/* Sub-headline */}
@@ -45,7 +45,7 @@ export default function HeroV2({ onSelectTier }: Props) {
             <span className="font-semibold text-secondary">
               revenue-impact estimates
             </span>{" "}
-            within <span className="font-semibold text-secondary">48 hours</span>.
+            within <span className="font-semibold text-secondary">60 minutes</span>.
           </p>
 
           {/* Primary CTA */}
@@ -57,6 +57,11 @@ export default function HeroV2({ onSelectTier }: Props) {
             >
               Get My Revenue Leak Report — $29
             </button>
+
+            <p className="text-xs text-muted-foreground">
+              Delivered to your inbox in 60 minutes. Money-back if it doesn't
+              surface 5 fixes.
+            </p>
 
             {/* Risk reversal */}
             <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">

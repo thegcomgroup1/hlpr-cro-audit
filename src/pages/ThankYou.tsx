@@ -91,7 +91,7 @@ const STEPS = [
   {
     icon: Send,
     title: "You get the playbook",
-    body: "Delivered to your inbox within 48 hours with clear, actionable recommendations you can ship this week.",
+    body: "Delivered to your inbox in 60 minutes for Mini Audits, 24 hours for Full Audits — with clear, actionable recommendations you can ship this week.",
   },
 ];
 
@@ -108,7 +108,7 @@ function SuccessView() {
             Payment confirmed. Your audit is on the way.
           </h1>
           <p className="mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
-            We received your payment and your audit is being prepared. You'll get it in your inbox within 48 hours.
+            We received your payment and your audit is being prepared. You'll get it in your inbox within 60 minutes (Mini) or 24 hours (Full).
           </p>
         </div>
       </section>
