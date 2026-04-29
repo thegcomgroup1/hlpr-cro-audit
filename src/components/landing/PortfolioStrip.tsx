@@ -1,6 +1,5 @@
 import edenCove from "@/assets/portfolio/eden-cove.png";
 import voirChat from "@/assets/portfolio/voir-chat.png";
-import olaraProduct from "@/assets/portfolio/olara-product.png";
 import kaizen from "@/assets/portfolio/kaizen.png";
 import streaming from "@/assets/portfolio/streaming.png";
 import dunamis from "@/assets/portfolio/dunamis.png";
@@ -19,7 +18,6 @@ interface PortfolioItem {
 const PORTFOLIO: PortfolioItem[] = [
   { brand: "Eden Cove", category: "Sanctuary / retreat", screenshot: edenCove },
   { brand: "Voir Homme", category: "Luxury fashion ecom", screenshot: voirChat },
-  { brand: "Olara", category: "Red light therapy ecom", screenshot: olaraProduct },
   { brand: "Kaizen Beauty", category: "Premium nail salon", screenshot: kaizen },
   { brand: "Streaming4YouNow", category: "Streaming service", screenshot: streaming },
   { brand: "Dunamis Marketing", category: "Christian media agency", screenshot: dunamis },
@@ -42,7 +40,7 @@ export default function PortfolioStrip() {
             className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
-            11 sites shipped. $1.2M+ in client ad spend optimized.
+            10+ sites shipped. $1.2M+ in client ad spend optimized.
           </h2>
           <p
             className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base"
