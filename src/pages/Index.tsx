@@ -92,7 +92,7 @@ function HowItWorksSection() {
     {
       num: 1,
       title: "Tell us about your business",
-      desc: "Answer 12 quick questions so we audit through your customers' eyes — not a generic checklist.",
+      desc: "A short intake teaches us your business so we audit through your customers' eyes — not against a generic checklist.",
       visual: <Globe className="mt-5 text-primary" size={32} strokeWidth={1.5} />,
     },
     {
@@ -346,7 +346,7 @@ function FAQSection() {
     },
     {
       q: "What if I don't have a website yet?",
-      a: "If you have any live page — landing page, booking page, even a Linktree — we can audit it. If you have nothing live, book a strategy call and we'll scope the right starting point.",
+      a: "If you have a live website, landing page, or booking page — we can audit it. If you have nothing live yet, book a strategy call and we'll scope the right starting point together.",
     },
     {
       q: "How is this different from PageSpeed Insights or a free tool?",
@@ -366,7 +366,7 @@ function FAQSection() {
     },
     {
       q: "What if I want you to fix what you find?",
-      a: "We offer full implementation services starting at $1,500/month. Most audit buyers become retainer clients because the ROI from the report makes the case for itself.",
+      a: "Yes — full implementation services are available. Email retainers start at $500. Website builds start at $1,500 plus monthly support. The audit's ROI estimates usually make the right tier obvious, and most audit buyers convert to retainer because the math speaks for itself.",
     },
     {
       q: "Is the free score actually useful?",
@@ -522,7 +522,7 @@ export default function Index() {
 
       <ValuePropRow
         eyebrow="Prioritized action plan"
-        headline="A playbook your team can ship this sprint."
+        headline="What to fix first. Ranked by ROI."
         body="No 100-item dump. We give you the top fixes ranked by ROI, with the wording, layout, and offers your visitors actually need to convert."
         bullets={[
           "Top 3 quick wins for week 1",
