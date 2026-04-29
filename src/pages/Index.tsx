@@ -10,8 +10,6 @@ import {
   Target,
   DollarSign,
   Globe,
-  FileText,
-  Wrench,
   Search,
   LineChart,
   ListChecks,
@@ -27,6 +25,9 @@ import FudStrip from "@/components/landing/FudStrip";
 import FounderSection from "@/components/landing/FounderSection";
 import FreeScoreSection from "@/components/landing/FreeScoreSection";
 import FinalCtaBand from "@/components/landing/FinalCtaBand";
+import PortfolioStrip from "@/components/landing/PortfolioStrip";
+import WhatHappensAfter from "@/components/landing/WhatHappensAfter";
+import AuditArc from "@/components/landing/visuals/AuditArc";
 import illustrationJourney from "@/assets/illustration-journey.png";
 import illustrationRevenue from "@/assets/illustration-revenue.png";
 import illustrationPlaybook from "@/assets/illustration-playbook.png";
@@ -37,32 +38,84 @@ function Logo({ className = "" }: { className?: string }) {
   );
 }
 
+function ScoreGaugeSnippet() {
+  return (
+    <div className="mt-5 flex flex-col items-center">
+      <div className="relative flex h-[60px] w-[60px] items-center justify-center">
+        <svg viewBox="0 0 36 36" className="h-[60px] w-[60px] -rotate-90">
+          <circle cx="18" cy="18" r="15.9" fill="none" className="stroke-muted" strokeWidth="3" />
+          <circle
+            cx="18"
+            cy="18"
+            r="15.9"
+            fill="none"
+            className="stroke-primary"
+            strokeWidth="3"
+            strokeDasharray="72, 100"
+            strokeLinecap="round"
+          />
+        </svg>
+        <span className="absolute text-[22px] font-bold leading-none text-secondary">72</span>
+      </div>
+      <span className="mt-1.5 text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">
+        Free CRO score
+      </span>
+    </div>
+  );
+}
+
+function PrioritiesSnippet() {
+  const items = [
+    { n: 1, title: "Remove unused JS", meta: "$1,000/mo · High impact" },
+    { n: 2, title: "Add exit-intent popup", meta: "$750/mo · Quick win" },
+    { n: 3, title: "Install live chat", meta: "$550/mo · Quick win" },
+  ];
+  return (
+    <div className="mt-5 w-full max-w-[220px] space-y-2">
+      {items.map((it) => (
+        <div key={it.n} className="flex items-start gap-2 rounded-lg border border-border bg-card p-2 text-left shadow-sm">
+          <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+            {it.n}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[11px] font-bold text-secondary">{it.title}</p>
+            <p className="text-[9px] text-muted-foreground">{it.meta}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function HowItWorksSection() {
   const steps = [
     {
       num: 1,
       title: "Tell us about your business",
       desc: "Answer 12 quick questions so we audit through your customers' eyes — not a generic checklist.",
-      icon: Globe,
+      visual: <Globe className="mt-5 text-primary" size={32} strokeWidth={1.5} />,
     },
     {
       num: 2,
       title: "We hand-audit your site",
       desc: "We score 50+ conversion factors across 6 categories and rank fixes by impact ÷ effort.",
-      icon: FileText,
+      visual: <ScoreGaugeSnippet />,
     },
     {
       num: 3,
       title: "Ship fixes that pay you back",
       desc: "You get a prioritized playbook with revenue estimates. Implement yourself or hire us to do it.",
-      icon: Wrench,
+      visual: <PrioritiesSnippet />,
     },
   ];
 
   return (
     <section className="bg-muted/40">
       <div className="mx-auto max-w-5xl px-5 py-20 text-center sm:px-8 md:py-24">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+        <div className="flex justify-center">
+          <AuditArc size={28} className="text-primary/70" />
+        </div>
+        <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-primary">
           How it works
         </p>
         <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
@@ -71,10 +124,16 @@ function HowItWorksSection() {
         <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
           {steps.map((s) => (
             <div key={s.num} className="flex flex-col items-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground shadow-md">
-                {s.num}
+              <div className="relative">
+                <AuditArc
+                  size={64}
+                  className="absolute inset-0 -m-2 text-primary/40"
+                />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground shadow-md">
+                  {s.num}
+                </div>
               </div>
-              <s.icon className="mt-5 text-primary" size={32} strokeWidth={1.5} />
+              {s.visual}
               <h3 className="mt-4 text-lg font-bold text-secondary">
                 {s.title}
               </h3>
@@ -115,7 +174,7 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
         "Section-by-section scoring",
         "Prioritized fix list",
         "Revenue impact estimates",
-        "Delivered within 48 hours",
+        "Delivered within 60 minutes",
       ],
       cta: "Get Mini Audit — $29",
       tier: "mini",
@@ -132,7 +191,7 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
         "Custom recommendations with wireframes",
         "Revenue gap calculation",
         "Priority action plan with effort/impact matrix",
-        "Delivered within 5 business days",
+        "Delivered within 24 hours",
       ],
       cta: "Get Full Audit — $99",
       tier: "full",
@@ -294,7 +353,7 @@ function FAQSection() {
     },
     {
       q: "How long does it take?",
-      a: "Mini Audit: within 48 hours. Full Audit: within 5 business days. We start as soon as you complete the intake form.",
+      a: "Mini Audit: within 60 minutes. Full Audit: within 24 hours. We start as soon as you complete the intake form.",
     },
     {
       q: "What if I want you to fix what you find?",
