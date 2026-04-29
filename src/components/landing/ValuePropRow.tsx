@@ -1,4 +1,5 @@
 import { Check, type LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface Props {
   eyebrow: string;
@@ -9,6 +10,8 @@ interface Props {
   /** Optional illustration. Falls back to the icon tile when omitted. */
   image?: string;
   imageAlt?: string;
+  /** Inline JSX visual that takes priority over `image`. Use for audit-UI snippets. */
+  visual?: ReactNode;
   reverse?: boolean;
 }
 
@@ -20,6 +23,7 @@ export default function ValuePropRow({
   icon: Icon,
   image,
   imageAlt,
+  visual,
   reverse = false,
 }: Props) {
   return (
@@ -33,27 +37,33 @@ export default function ValuePropRow({
           {/* Visual */}
           <div className="relative">
             <div className="aspect-square overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-muted via-card to-muted/40 p-6 shadow-sm sm:p-8">
-              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-border bg-card">
-                {image ? (
-                  <img
-                    src={image}
-                    alt={imageAlt ?? eyebrow}
-                    width={1024}
-                    height={1024}
-                    loading="lazy"
-                    className="h-full w-full object-contain p-4"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                      <Icon size={40} strokeWidth={1.5} />
+              {visual ? (
+                <div className="flex h-full w-full items-center justify-center">
+                  {visual}
+                </div>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center rounded-2xl border border-border bg-card">
+                  {image ? (
+                    <img
+                      src={image}
+                      alt={imageAlt ?? eyebrow}
+                      width={1024}
+                      height={1024}
+                      loading="lazy"
+                      className="h-full w-full object-contain p-4"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                        <Icon size={40} strokeWidth={1.5} />
+                      </div>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        {eyebrow}
+                      </p>
                     </div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      {eyebrow}
-                    </p>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
