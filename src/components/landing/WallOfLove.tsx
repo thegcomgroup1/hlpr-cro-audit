@@ -1,64 +1,74 @@
-import { Star, Quote } from "lucide-react";
+import { Star } from "lucide-react";
+import ashleighPhoto from "@/assets/testimonials/ashleigh-j.jpg";
+import mikePhoto from "@/assets/testimonials/mike-s.png";
+import louisPhoto from "@/assets/testimonials/louis-f.jpg";
+import gloriaPhoto from "@/assets/testimonials/gloria-g.png";
 
 interface Testimonial {
-  quote: string;
   name: string;
-  role: string;
+  title: string;
+  company: string;
+  photo: string;
+  quote: string;
+  result: string;
+  rating: number;
+  photo_position?: "top" | "center";
   /** The buyer objection this testimonial defuses (for our internal mapping). */
   objection: string;
 }
 
-// TODO_TESTIMONIAL: swap each entry below for a real customer quote.
-// Keep `objection` mapped so the wall keeps defusing the right buyer fear.
 const TESTIMONIALS: Testimonial[] = [
   {
+    name: "Ashleigh J.",
+    title: "Owner",
+    company: "Kaizen Beauty",
+    photo: ashleighPhoto,
+    quote:
+      "This changed everything for us. Clients can book appointments 24/7 without me lifting a finger. I wake up to a full calendar — it's honestly the best investment I've made for the salon.",
+    result: "3x more bookings",
+    rating: 5,
     objection: "Worth the price",
-    quote:
-      "The audit paid for itself the first week. We implemented the top 3 fixes and saw a 22% lift in product page conversion.",
-    name: "Sarah K.",
-    role: "DTC Founder",
   },
   {
+    name: "Mike S.",
+    title: "Broker",
+    company: "Real Estate Connect",
+    photo: mikePhoto,
+    quote:
+      "The site has all the right look and feel. I'm impressed by how much was done with very little input from us. Our leads now get instant follow-up, and our agents love it.",
+    result: "40% more qualified leads",
+    rating: 5,
     objection: "Will it work for my niche",
-    quote:
-      "I run a service business, not e-com, and assumed this wouldn't apply. The intake captured exactly what made my offer different.",
-    name: "Marcus D.",
-    role: "Agency Owner",
   },
   {
+    name: "Louis F.",
+    title: "Founder",
+    company: "Streaming4YouNow",
+    photo: louisPhoto,
+    photo_position: "top",
+    quote:
+      "Customer questions used to eat up hours of my day. Now the AI handles most of it automatically. My team can finally focus on what actually matters. Really impressed with how it turned out.",
+    result: "80% support automated",
+    rating: 5,
     objection: "Is it actually actionable",
-    quote:
-      "Every fix had a dollar estimate next to it. My dev knew exactly what to ship first instead of guessing.",
-    name: "Priya R.",
-    role: "Head of Growth",
   },
   {
+    name: "Gloria G.",
+    title: "Manager",
+    company: "Eden Cove",
+    photo: gloriaPhoto,
+    quote:
+      "Our old website was dated and nobody engaged with it. This one actually converts visitors into bookings — we're getting more inquiries than we can handle. Exactly what we needed.",
+    result: "5x engagement increase",
+    rating: 5,
     objection: "Speed of delivery",
-    quote:
-      "Promised 48 hours. Delivered in 31. That alone makes this the easiest CRO purchase I've made.",
-    name: "Devon B.",
-    role: "Shopify Merchant",
-  },
-  {
-    objection: "Generic vs custom",
-    quote:
-      "I've bought template audits before. This one called out the exact copy on my hero and why it was costing me ad spend.",
-    name: "Lena M.",
-    role: "Founder, Skincare Brand",
-  },
-  {
-    objection: "Trust / credibility",
-    quote:
-      "Tim doesn't just point at problems. The report sequenced fixes by impact ÷ effort so we shipped wins in one sprint.",
-    name: "Jordan W.",
-    role: "Marketing Director",
   },
 ];
 
 export default function WallOfLove() {
   return (
     <section className="bg-muted/40">
-      <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 md:py-28">
+      <div className="mx-auto max-w-5xl px-5 py-20 sm:px-8 md:py-28">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             Wall of love
@@ -67,32 +77,48 @@ export default function WallOfLove() {
             className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
-            Founders who stopped guessing — and started shipping fixes that paid
-            them back.
+            Real names. Real results.
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2">
           {TESTIMONIALS.map((t) => (
             <figure
               key={t.name}
               className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:shadow-md"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={t.photo}
+                    alt={t.name}
+                    loading="lazy"
+                    className="h-12 w-12 shrink-0 rounded-full object-cover"
+                    style={{
+                      objectPosition: t.photo_position === "top" ? "top" : "center",
+                    }}
+                  />
+                  <div>
+                    <p className="text-sm font-bold text-secondary">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t.title}, {t.company}
+                    </p>
+                  </div>
+                </div>
                 <div className="flex items-center gap-0.5 text-primary">
-                  {[0, 1, 2, 3, 4].map((i) => (
+                  {Array.from({ length: t.rating }).map((_, i) => (
                     <Star key={i} size={13} fill="currentColor" strokeWidth={0} />
                   ))}
                 </div>
-                <Quote size={18} className="text-muted-foreground/40" />
               </div>
-              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-secondary">
+              <blockquote className="mt-4 flex-1 text-sm italic leading-relaxed text-secondary">
                 "{t.quote}"
               </blockquote>
-              <figcaption className="mt-5 border-t border-border pt-4">
-                <p className="text-sm font-bold text-secondary">{t.name}</p>
-                <p className="text-xs text-muted-foreground">{t.role}</p>
-              </figcaption>
+              <div className="mt-5">
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                  {t.result}
+                </span>
+              </div>
             </figure>
           ))}
         </div>
