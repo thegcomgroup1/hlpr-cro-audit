@@ -1,54 +1,30 @@
-# Replace value-prop visuals with audit-report-matching JSX snippets
+## Problem
 
-Mirror the actual CRO Score Report design (navy/amber/blue/green) so visitors recognize each visual as a section of the report they'll receive.
+On mobile (390px), the "Other audits vs hlpr" table in `DifferentiatorSection.tsx` uses a fixed `grid-cols-[1fr_1fr_1.2fr]` layout at every breakpoint. Result: each cell is ~100px wide, words break mid-syllable ("CRO / strategist / who's / seen / 400+ / stores"), rows become very tall, and the comparison is hard to scan.
 
-## 1. Update `ValuePropRow.tsx`
-Add `visual?: React.ReactNode` prop. Render priority: `visual` > `image` > icon-tile fallback. Outer rounded-3xl gradient frame stays the same.
+## Fix
 
-## 2. Create three visual components in `src/components/landing/visuals/`
+Switch to a responsive layout:
 
-The patch's code blocks were stripped of JSX by markdown. I'll reconstruct each component faithfully from the spec, using the exact hex values and structure described.
+- **Mobile (<sm):** Stack each row as a single card. Row label on top, then two side-by-side mini-columns ("Other audits" with red X / "hlpr" with blue check) so the contrast is still immediate but each side gets ~50% width instead of ~33%. Headers hidden on mobile (label is repeated inline per row).
+- **Desktop (≥sm):** Keep the existing 3-column table layout unchanged.
 
-### `CustomerJourneyVisual.tsx`
-Top of the report. Vertical stack inside a white card:
-- **Navy header bar** (`#0E1E3F`, rounded-t): tiny green "HLPR" caps left, white "Your CRO Score Report" right
-- **Score gauge** (centered): SVG circle, amber `#D97706` 4px ring at 72% fill, white inner, navy serif "72" centered. Below: "FREE CRO SCORE" small caps muted gray, "Good — Room to Grow" amber
-- **Revenue gap callout**: cream `#FAEEDA` bg, 3px amber `#D97706` left border. "ESTIMATED MONTHLY REVENUE GAP" dark amber small caps, "$2,800–$5,200" big mid-amber
+### Implementation details (`src/components/landing/DifferentiatorSection.tsx`)
 
-### `RevenueImpactVisual.tsx`
-"Key Findings" navy heading + 3 stacked finding cards. Each card:
-- Severity pill top-left (critical `#FCEBEB`/`#791F1F`, high `#FAC775`/`#633806`, medium `#FAEEDA`/`#633806`)
-- Category tag muted gray, bold navy title (2 lines), green `#1D9E75` "Potential: $X–$Y/mo"
+1. Hide the existing header row on mobile (`hidden sm:grid`).
+2. For each row, render two trees:
+   - Mobile card (`sm:hidden`): label as a small uppercase eyebrow, then a 2-col grid with "Other audits" label + X + text on the left, "hlpr" label + check + text on the right (highlighted bg). Tighter padding (`p-4`), `text-[13px]` for body, `leading-snug`.
+   - Desktop grid (`hidden sm:grid`): the current 3-col layout.
+3. Reduce section vertical padding slightly on mobile (`py-10 md:py-20`) and use `max-w-md sm:max-w-5xl` so the mobile card column isn't stretched edge-to-edge awkwardly.
+4. Slightly tighten the H2 on mobile (`text-2xl sm:text-4xl`) and balance with `text-pretty` to prevent ugly orphan words.
+5. Keep all colors via existing semantic tokens (`primary`, `secondary`, `muted-foreground`, `destructive`, `border`, `card`).
 
-Findings: Critical/Technical Performance/"Speed Index critically slow…"/$800–$1,200; High/UX/"No exit-intent popup…"/$600–$900; Medium/Conversion/"No live chat…"/$400–$700.
+No changes to copy, no changes to other components, no business logic touched.
 
-### `PrioritizedActionVisual.tsx`
-"Top Priorities" navy heading + 3 numbered rows. Each row:
-- Blue `#1AA3FF` numbered circle (white numeral)
-- Bold navy title, muted gray meta line ("Impact: High · Effort: … · Est. $X/mo")
+## Files
 
-Three priorities as listed in the spec.
+- `src/components/landing/DifferentiatorSection.tsx` — restructure render to mobile-stacked / desktop-grid dual layout.
 
-### Color usage notes
-All three components use literal hex values via inline `style` (not Tailwind tokens) because they must match the report's literal colors regardless of site theme. This is an intentional exception to the design-system rule for these report-mirror visuals.
+## Verification
 
-## 3. Wire into `src/pages/Index.tsx`
-- Add three imports
-- Remove `illustrationJourney`, `illustrationRevenue`, `illustrationPlaybook` imports
-- Replace `image=` / `imageAlt=` props on each of the three `<ValuePropRow />` calls with `visual={<CustomerJourneyVisual />}` etc.
-
-## 4. Delete orphan illustration PNGs
-After Step 3, `illustration-journey.png`, `illustration-revenue.png`, `illustration-playbook.png` have no remaining imports. Delete all three from `src/assets/`.
-
-## Files touched
-1. `src/components/landing/ValuePropRow.tsx` — add `visual` prop
-2. `src/components/landing/visuals/CustomerJourneyVisual.tsx` — create
-3. `src/components/landing/visuals/RevenueImpactVisual.tsx` — create
-4. `src/components/landing/visuals/PrioritizedActionVisual.tsx` — create
-5. `src/pages/Index.tsx` — swap imports + props
-6. `src/assets/illustration-journey.png` — delete
-7. `src/assets/illustration-revenue.png` — delete
-8. `src/assets/illustration-playbook.png` — delete
-
-## Out of scope
-No copy changes, no structural changes to other sections, no spacing/typography adjustments beyond the visual components themselves.
+After implementation, view at 390px to confirm: no mid-word breaks, each row reads as a clean side-by-side comparison card, and the desktop layout (≥640px) is unchanged.
