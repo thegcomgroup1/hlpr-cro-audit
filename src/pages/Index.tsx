@@ -28,9 +28,9 @@ import FinalCtaBand from "@/components/landing/FinalCtaBand";
 import PortfolioStrip from "@/components/landing/PortfolioStrip";
 import WhatHappensAfter from "@/components/landing/WhatHappensAfter";
 import AuditArc from "@/components/landing/visuals/AuditArc";
-import illustrationJourney from "@/assets/illustration-journey.png";
-import illustrationRevenue from "@/assets/illustration-revenue.png";
-import illustrationPlaybook from "@/assets/illustration-playbook.png";
+import CustomerJourneyVisual from "@/components/landing/visuals/CustomerJourneyVisual";
+import RevenueImpactVisual from "@/components/landing/visuals/RevenueImpactVisual";
+import PrioritizedActionVisual from "@/components/landing/visuals/PrioritizedActionVisual";
 
 function Logo({ className = "" }: { className?: string }) {
   return (
@@ -503,8 +503,7 @@ export default function Index() {
           "Full funnel from ad click to confirmation",
         ]}
         icon={Search}
-        image={illustrationJourney}
-        imageAlt="Visitors flowing through a conversion funnel into revenue"
+        visual={<CustomerJourneyVisual />}
       />
 
       <ValuePropRow
@@ -518,8 +517,7 @@ export default function Index() {
           "Sequenced by impact ÷ effort",
         ]}
         icon={LineChart}
-        image={illustrationRevenue}
-        imageAlt="Bar chart trending upward with dollar amounts per fix"
+        visual={<RevenueImpactVisual />}
       />
 
       <ValuePropRow
@@ -532,8 +530,7 @@ export default function Index() {
           "Long-term structural fixes flagged separately",
         ]}
         icon={ListChecks}
-        image={illustrationPlaybook}
-        imageAlt="Prioritized stack of fix cards with the top one highlighted"
+        visual={<PrioritizedActionVisual />}
       />
 
       <PortfolioStrip />
