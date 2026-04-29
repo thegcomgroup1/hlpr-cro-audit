@@ -8,7 +8,7 @@ interface Props {
 export default function FinalCtaBand({ onSelectTier }: Props) {
   return (
     <section className="bg-secondary text-secondary-foreground">
-      <div className="mx-auto max-w-4xl px-5 py-20 text-center sm:px-8 md:py-24">
+      <div className="mx-auto max-w-4xl px-5 py-14 text-center sm:px-8 md:py-20">
         <h2
           className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl md:text-5xl"
           style={{ textWrap: "balance" } as React.CSSProperties}

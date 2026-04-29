@@ -24,9 +24,9 @@ export default function ValuePropRow({
 }: Props) {
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 md:py-16">
         <div
-          className={`grid items-center gap-10 md:grid-cols-2 md:gap-16 ${
+          className={`grid items-center gap-8 md:grid-cols-2 md:gap-12 ${
             reverse ? "md:[&>*:first-child]:order-2" : ""
           }`}
         >

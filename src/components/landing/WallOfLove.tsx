@@ -68,7 +68,7 @@ const TESTIMONIALS: Testimonial[] = [
 export default function WallOfLove() {
   return (
     <section className="bg-muted/40">
-      <div className="mx-auto max-w-5xl px-5 py-20 sm:px-8 md:py-28">
+      <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 md:py-20">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             Wall of love
@@ -81,7 +81,7 @@ export default function WallOfLove() {
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {TESTIMONIALS.map((t) => (
             <figure
               key={t.name}

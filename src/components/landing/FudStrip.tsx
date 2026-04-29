@@ -26,7 +26,7 @@ const ITEMS = [
 export default function FudStrip() {
   return (
     <section className="bg-secondary text-secondary-foreground">
-      <div className="mx-auto grid max-w-6xl gap-6 px-5 py-12 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-6xl gap-6 px-5 py-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
         {ITEMS.map(({ icon: Icon, title, body }) => (
           <div key={title} className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary-foreground">

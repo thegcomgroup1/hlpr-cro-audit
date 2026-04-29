@@ -9,7 +9,7 @@ const PAINS = [
 export default function PainPointSection() {
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-3xl px-5 py-20 sm:px-8 md:py-28">
+      <div className="mx-auto max-w-3xl px-5 py-14 sm:px-8 md:py-20">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-primary">
           Sound familiar?
         </p>
@@ -20,7 +20,7 @@ export default function PainPointSection() {
           You're driving traffic. It's just not turning into revenue.
         </h2>
 
-        <ul className="mx-auto mt-10 flex max-w-2xl flex-col gap-4">
+        <ul className="mx-auto mt-8 flex max-w-2xl flex-col gap-3">
           {PAINS.map((p) => (
             <li
               key={p}
@@ -37,7 +37,7 @@ export default function PainPointSection() {
         </ul>
 
         {/* Solve transition */}
-        <div className="mx-auto mt-10 max-w-2xl rounded-2xl border-2 border-primary/30 bg-primary/[0.04] p-6 text-center sm:p-8">
+        <div className="mx-auto mt-8 max-w-2xl rounded-2xl border-2 border-primary/30 bg-primary/[0.04] p-6 text-center sm:p-8">
           <p
             className="text-base leading-relaxed text-secondary sm:text-lg"
             style={{ textWrap: "pretty" } as React.CSSProperties}

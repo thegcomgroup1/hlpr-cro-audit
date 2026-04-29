@@ -5,8 +5,8 @@ import AuditArc from "./visuals/AuditArc";
 export default function FounderSection() {
   return (
     <section className="bg-muted/40">
-      <div className="mx-auto max-w-4xl px-5 py-20 sm:px-8 md:py-28">
-        <div className="grid items-center gap-10 md:grid-cols-[auto_1fr] md:gap-12">
+      <div className="mx-auto max-w-4xl px-5 py-14 sm:px-8 md:py-20">
+        <div className="grid items-center gap-8 md:grid-cols-[auto_1fr] md:gap-10">
           {/* Headshot */}
           <div className="mx-auto md:mx-0">
             <img

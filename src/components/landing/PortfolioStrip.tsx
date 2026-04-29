@@ -31,7 +31,7 @@ const PORTFOLIO: PortfolioItem[] = [
 export default function PortfolioStrip() {
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 md:py-28">
+      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-20">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             The track record
@@ -51,7 +51,7 @@ export default function PortfolioStrip() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {PORTFOLIO.map((item) => (
             <figure
               key={item.brand}
