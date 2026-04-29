@@ -26,7 +26,7 @@ const ROWS: Array<{ label: string; others: string; us: string }> = [
 export default function DifferentiatorSection() {
   return (
     <section className="bg-background">
-      <div className="mx-auto max-w-5xl px-5 py-20 sm:px-8 md:py-28">
+      <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 md:py-20">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             Why hlpr
@@ -39,7 +39,7 @@ export default function DifferentiatorSection() {
           </h2>
         </div>
 
-        <div className="mt-12 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           {/* Header */}
           <div className="grid grid-cols-[1fr_1fr_1.2fr] border-b border-border bg-muted/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             <div className="px-5 py-3" />

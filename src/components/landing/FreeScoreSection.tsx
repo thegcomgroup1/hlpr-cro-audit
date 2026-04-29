@@ -35,7 +35,7 @@ export default function FreeScoreSection() {
 
   return (
     <section id="free-score" className="bg-background">
-      <div className="mx-auto max-w-3xl px-5 py-20 sm:px-8 md:py-24">
+      <div className="mx-auto max-w-3xl px-5 py-12 sm:px-8 md:py-16">
         <div className="rounded-3xl border-2 border-dashed border-primary/30 bg-primary/[0.04] p-8 text-center sm:p-12">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Sparkles size={22} />

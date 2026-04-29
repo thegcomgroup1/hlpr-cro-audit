@@ -15,7 +15,7 @@ export default function HeroV2({ onSelectTier }: Props) {
         aria-hidden="true"
       />
 
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 sm:px-8 md:grid-cols-[1.1fr_1fr] md:gap-10 md:pb-24 md:pt-10">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 px-5 pb-12 sm:px-8 md:grid-cols-[1.1fr_1fr] md:gap-10 md:pb-16 md:pt-8">
         {/* Left — copy */}
         <div className="text-center md:text-left">
           {/* Eyebrow */}
@@ -83,7 +83,7 @@ export default function HeroV2({ onSelectTier }: Props) {
           </div>
 
           {/* Inline social proof */}
-          <div className="mt-8 flex flex-col items-center gap-2 border-t border-border pt-6 text-center md:items-start md:text-left">
+          <div className="mt-6 flex flex-col items-center gap-2 border-t border-border pt-5 text-center md:items-start md:text-left">
             <div className="flex items-center gap-1 text-primary">
               {[0, 1, 2, 3, 4].map((i) => (
                 <Star key={i} size={14} fill="currentColor" strokeWidth={0} />

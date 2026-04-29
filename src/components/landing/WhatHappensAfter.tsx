@@ -30,7 +30,7 @@ const PATHS = [
 export default function WhatHappensAfter() {
   return (
     <section className="bg-muted/40">
-      <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 md:py-28">
+      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-20">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
             After the audit
@@ -51,7 +51,7 @@ export default function WhatHappensAfter() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
           {PATHS.map(({ icon: Icon, headline, body, cta, href }) => (
             <div
               key={headline}
