@@ -202,7 +202,10 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-4xl px-5 py-20 text-center sm:px-8 md:py-28">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+        <div className="flex justify-center">
+          <AuditArc size={28} className="text-primary/70" />
+        </div>
+        <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-primary">
           Pricing
         </p>
         <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
@@ -224,9 +227,15 @@ function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => v
               }`}
             >
               {t.highlight && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
-                  Most Popular
-                </span>
+                <>
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
+                    Most Popular
+                  </span>
+                  <AuditArc
+                    size={36}
+                    className="absolute right-3 top-3 text-primary/40"
+                  />
+                </>
               )}
               <h3 className="text-lg font-bold text-secondary">{t.name}</h3>
 
@@ -407,6 +416,27 @@ function Footer() {
   return (
     <footer className="border-t border-border bg-secondary text-secondary-foreground">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-5 py-12 text-center sm:px-8">
+        <p className="border-b border-border/30 pb-5 text-xs text-secondary-foreground/70">
+          Sister brands:{" "}
+          <a
+            href="https://solutions.hlpr.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-primary-foreground transition hover:text-primary"
+          >
+            HLPR Solutions
+          </a>{" "}
+          (full-service builds) ·{" "}
+          <a
+            href="https://ministries.hlpr.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-primary-foreground transition hover:text-primary"
+          >
+            HLPR for Ministries
+          </a>{" "}
+          (church websites)
+        </p>
         <Logo className="text-2xl text-primary-foreground" />
         <p className="text-sm opacity-70">
           Email Marketing & Automation for E-Commerce
@@ -506,6 +536,7 @@ export default function Index() {
         imageAlt="Prioritized stack of fix cards with the top one highlighted"
       />
 
+      <PortfolioStrip />
       <WallOfLove />
       <DifferentiatorSection />
       <HowItWorksSection />
@@ -514,6 +545,7 @@ export default function Index() {
         <PricingSection onSelectTier={setModalTier} />
       </div>
 
+      <WhatHappensAfter />
       <FudStrip />
       <FounderSection />
       <FreeScoreSection />
