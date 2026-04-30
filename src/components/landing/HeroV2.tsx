@@ -1,12 +1,18 @@
-import { Star, ShieldCheck, ArrowDown } from "lucide-react";
+import { Star, ShieldCheck, ArrowDown, Loader2 } from "lucide-react";
+import { useState } from "react";
 import ReportMockup from "./ReportMockup";
-import type { AuditTier } from "@/components/AuditCheckoutModal";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
-interface Props {
-  onSelectTier: (tier: AuditTier) => void;
-}
+export default function HeroV2() {
+  const [loading, setLoading] = useState(false);
 
-export default function HeroV2({ onSelectTier }: Props) {
+  const handleBookStrategy = async () => {
+    // Anchor scroll so the user sees the pricing card too
+    const target = document.getElementById("strategy-call");
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <section className="relative overflow-hidden bg-background pt-24 sm:pt-28">
       {/* Soft background wash */}
@@ -29,9 +35,9 @@ export default function HeroV2({ onSelectTier }: Props) {
             className="mt-5 text-[2.5rem] font-extrabold leading-[1.05] tracking-tight text-secondary sm:text-5xl md:text-[3.5rem]"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
-            Find the{" "}
-            <span className="text-primary">$4K–$8K/month</span> your store is
-            leaking — in 60 minutes.
+            Find what's costing you{" "}
+            <span className="text-primary">tens of thousands</span> in lost
+            conversions — recorded just for you.
           </h1>
 
           {/* Sub-headline */}
@@ -39,28 +45,30 @@ export default function HeroV2({ onSelectTier }: Props) {
             className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg md:mx-0"
             style={{ textWrap: "pretty" } as React.CSSProperties}
           >
-            Stop guessing why visitors don't convert. We audit your homepage,
-            product pages, checkout, mobile UX, email capture, and site speed,
-            then hand you a prioritized fix list with{" "}
+            Stop guessing what's breaking your funnel. The founder personally
+            records a 20-minute video walkthrough of your site, then meets you
+            live for a 30-minute Q&amp;A to map the{" "}
             <span className="font-semibold text-secondary">
-              revenue-impact estimates
+              specific fixes worth real money
             </span>{" "}
-            within <span className="font-semibold text-secondary">60 minutes</span>.
+            for your business.
           </p>
 
           {/* Primary CTA */}
           <div className="mt-7 flex flex-col items-center gap-3 md:items-start">
             <button
               type="button"
-              onClick={() => onSelectTier("mini")}
-              className="inline-flex h-14 items-center justify-center rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg shadow-primary/25 transition active:scale-[0.97] hover:shadow-xl hover:shadow-primary/30"
+              onClick={handleBookStrategy}
+              disabled={loading}
+              className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg shadow-primary/25 transition active:scale-[0.97] hover:shadow-xl hover:shadow-primary/30 disabled:opacity-70"
             >
-              Get My Revenue Leak Report — $29
+              {loading && <Loader2 size={16} className="animate-spin" />}
+              Book My Strategy Call — $997
             </button>
 
             <p className="text-xs text-muted-foreground">
-              Delivered to your inbox in 60 minutes. Money-back if it doesn't
-              surface 5 fixes.
+              Personalized video + 30-min live Q&amp;A. Money-back if you don't
+              book a retainer follow-up.
             </p>
 
             {/* Risk reversal */}
@@ -68,7 +76,7 @@ export default function HeroV2({ onSelectTier }: Props) {
               <ShieldCheck size={14} className="text-primary" />
               <span>
                 <span className="font-bold text-secondary">100% money-back</span>{" "}
-                if we don't surface 5+ revenue-impacting fixes.
+                if you don't book a retainer follow-up.
               </span>
             </p>
 
@@ -77,7 +85,7 @@ export default function HeroV2({ onSelectTier }: Props) {
               href="#free-score"
               className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80"
             >
-              Or get a free CRO score first
+              Or get a free CRO score in 60 seconds
               <ArrowDown size={14} />
             </a>
           </div>

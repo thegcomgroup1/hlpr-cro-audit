@@ -80,18 +80,18 @@ function Footer() {
 const STEPS = [
   {
     icon: Search,
-    title: "We analyze your site",
-    body: "We dig into your homepage, mobile experience, checkout flow, product pages, email capture, and site speed.",
+    title: "The founder reviews your site",
+    body: "Tim personally walks through your homepage, mobile UX, checkout flow, product pages, email capture, and site speed.",
   },
   {
     icon: FileText,
-    title: "We generate your report",
-    body: "You get a custom PDF with scored findings, prioritized fixes, and estimated revenue impact.",
+    title: "You get a personalized Loom",
+    body: "A 20-minute recorded walkthrough of your site lands in your inbox within 48 hours — yours to keep, share with team, or revisit.",
   },
   {
     icon: Send,
-    title: "You get the playbook",
-    body: "Delivered to your inbox in 60 minutes for Mini Audits, 24 hours for Full Audits — with clear, actionable recommendations you can ship this week.",
+    title: "We meet live for the Q&A",
+    body: "After you watch the Loom, we book a 30-minute live working session to push back on findings, prioritize fixes, and map the next 90 days.",
   },
 ];
 
@@ -105,10 +105,10 @@ function SuccessView() {
             <CheckCircle2 size={56} className="text-primary" strokeWidth={2.25} />
           </div>
           <h1 className="text-balance text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl md:text-5xl">
-            Payment confirmed. Your audit is on the way.
+            Payment confirmed. Your strategy call is booked.
           </h1>
           <p className="mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
-            We received your payment and your audit is being prepared. You'll get it in your inbox within 60 minutes (Mini) or 24 hours (Full).
+            Loom walkthrough delivered within 48 hours. We'll email you to schedule the live Q&amp;A as soon as your video is ready.
           </p>
         </div>
       </section>

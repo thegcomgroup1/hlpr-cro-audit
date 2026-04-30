@@ -10,6 +10,7 @@ const corsHeaders = {
 const BodySchema = z.object({
   url: z.string().trim().url({ message: "Invalid URL" }).max(2048),
   email: z.string().trim().email({ message: "Invalid email" }).max(255),
+  monthly_revenue: z.enum(["<25k", "25k-100k", "100k-500k", "500k+"]),
 });
 
 Deno.serve(async (req) => {
@@ -41,7 +42,11 @@ Deno.serve(async (req) => {
 
     const { error } = await supabase
       .from("cro_score_requests")
-      .insert({ url: parsed.data.url, email: parsed.data.email });
+      .insert({
+        url: parsed.data.url,
+        email: parsed.data.email,
+        monthly_revenue: parsed.data.monthly_revenue,
+      });
 
     if (error) {
       console.error("Insert error:", error);
