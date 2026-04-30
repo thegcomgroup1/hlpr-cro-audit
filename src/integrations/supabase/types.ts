@@ -97,18 +97,21 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          monthly_revenue: string | null
           url: string
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
+          monthly_revenue?: string | null
           url: string
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
+          monthly_revenue?: string | null
           url?: string
         }
         Relationships: []
