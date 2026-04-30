@@ -14,7 +14,8 @@ import {
   LineChart,
   ListChecks,
 } from "lucide-react";
-import AuditCheckoutModal, { type AuditTier } from "@/components/AuditCheckoutModal";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import HeroV2 from "@/components/landing/HeroV2";
 import SocialProofBar from "@/components/landing/SocialProofBar";
 import PainPointSection from "@/components/landing/PainPointSection";
@@ -389,8 +390,8 @@ function FAQSection() {
       a: "Free tools score technical speed. We audit the full customer journey: copy, offer clarity, social proof placement, FUD reduction, mobile UX, and checkout flow — judgment calls no automated tool can make.",
     },
     {
-      q: "What if you don't find anything actionable?",
-      a: "100% refund. If we don't surface at least 5 revenue-impacting fixes, you don't pay. We've never had to issue this refund.",
+      q: "What if the strategy call doesn't lead anywhere?",
+      a: "If you book the strategy call but don't end up wanting to follow up with a retainer call afterward, we refund the $997 in full. The strategy call is structured as a self-funding intro: it pays for itself if you take the next step, costs you nothing if you don't.",
     },
     {
       q: "Who actually runs the audit?",
@@ -398,11 +399,15 @@ function FAQSection() {
     },
     {
       q: "How long does it take?",
-      a: "Mini Audit: within 60 minutes. Full Audit: within 24 hours. We start as soon as you complete the intake form.",
+      a: "Free CRO Score: emailed within 60 seconds of submission. Strategy Call: Loom delivered within 48 hours of booking, live Q&A scheduled at your preferred time after.",
     },
     {
       q: "What if I want you to fix what you find?",
-      a: "Yes — full implementation services are available. Email retainers start at $500. Website builds start at $1,500 plus monthly support. The audit's ROI estimates usually make the right tier obvious, and most audit buyers convert to retainer because the math speaks for itself.",
+      a: "Yes — full implementation services are available. Email retainers start at $500. Website builds start at $1,500 plus monthly support. The strategy call's ROI estimates usually make the right tier obvious, and most callers convert to retainer because the math speaks for itself.",
+    },
+    {
+      q: "Why $997 instead of a cheaper PDF audit?",
+      a: "Because cheap audits don't move the needle. A 20-page PDF you read once doesn't change anything — your team still won't ship the fixes. The strategy call is built differently: live work with the founder, recording you can replay, and a structured next step into a real retainer if it's the right fit. We charge for outcomes, not deliverables.",
     },
     {
       q: "Is the free score actually useful?",
@@ -508,8 +513,6 @@ function Footer() {
 }
 
 export default function Index() {
-  const [modalTier, setModalTier] = useState<AuditTier | null>(null);
-
   return (
     <div className="min-h-screen overflow-x-hidden">
       {/* Sticky nav */}
@@ -517,15 +520,15 @@ export default function Index() {
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:px-8">
           <Logo className="text-xl text-primary" />
           <a
-            href="#pricing"
+            href="#strategy-call"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition active:scale-[0.97] hover:shadow-md"
           >
-            Get Your Score
+            Book Strategy Call
           </a>
         </div>
       </nav>
 
-      <HeroV2 onSelectTier={setModalTier} />
+      <HeroV2 />
       <SocialProofBar />
       <PainPointSection />
 
@@ -575,7 +578,7 @@ export default function Index() {
       <HowItWorksSection />
 
       <div id="pricing">
-        <PricingSection onSelectTier={setModalTier} />
+        <PricingSection />
       </div>
 
       <WhatHappensAfter />
@@ -584,14 +587,8 @@ export default function Index() {
       <FreeScoreSection />
       <CredibilitySection />
       <FAQSection />
-      <FinalCtaBand onSelectTier={setModalTier} />
+      <FinalCtaBand />
       <Footer />
-
-      <AuditCheckoutModal
-        open={modalTier !== null}
-        tier={modalTier}
-        onClose={() => setModalTier(null)}
-      />
     </div>
   );
 }
