@@ -36,13 +36,11 @@ export default function ValuePropRow({
         >
           {/* Visual */}
           <div className="relative">
-            <div className="aspect-square overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-muted via-card to-muted/40 p-6 shadow-sm sm:p-8">
+            <div className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-muted via-card to-muted/40 p-4 shadow-sm sm:p-6">
               {visual ? (
-                <div className="flex h-full w-full items-center justify-center">
-                  {visual}
-                </div>
+                <div className="w-full">{visual}</div>
               ) : (
-                <div className="flex h-full w-full items-center justify-center rounded-2xl border border-border bg-card">
+                <div className="flex aspect-square w-full items-center justify-center rounded-2xl border border-border bg-card">
                   {image ? (
                     <img
                       src={image}
