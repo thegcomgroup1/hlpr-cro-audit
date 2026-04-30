@@ -5,25 +5,28 @@ const PATHS = [
     icon: Mail,
     headline: "Your audit reveals weak email capture",
     body:
-      "We install a custom email popup free for 7 days. If it captures more emails than your current setup, we discuss the full email retainer (Bronze, Silver, or Gold).",
+      "Free 7-day popup install proves we can capture more leads. Then Bronze ($500), Silver ($1K/mo), or Gold ($1.5K/mo) builds the system that nurtures them into revenue.",
     cta: "See Email Plans",
     href: "https://solutions.hlpr.io/#email-pricing",
+    external: true,
   },
   {
     icon: Globe,
     headline: "Your audit reveals a broken or outdated website",
     body:
-      "We design, build, and manage a new conversion-focused site in 14 days. Free homepage preview in 72 hours — no payment until you approve.",
+      "We design, build, and manage a new conversion-focused site in 14 days. Free homepage preview in 72 hours — no payment until you approve. Builds start at $1,500.",
     cta: "See Website Builds",
     href: "https://solutions.hlpr.io/#website-pricing",
+    external: true,
   },
   {
     icon: Compass,
     headline: "Your audit reveals deeper systemic issues",
     body:
-      "Book a free 20-minute strategy call and we'll map a 90-day plan for funnel, email, and growth.",
-    cta: "Book Strategy Call",
-    href: "https://links.hlpr.io/booking/aiMEM9Qf7GmaU0L6sTYT",
+      "The $997 strategy call is for brands at $100K+/mo who want senior eyes on the funnel. 90 minutes of dedicated work, money-back if you don't book a retainer follow-up.",
+    cta: "Book Strategy Call — $997",
+    href: "#strategy-call",
+    external: false,
   },
 ];
 
@@ -52,7 +55,7 @@ export default function WhatHappensAfter() {
         </div>
 
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {PATHS.map(({ icon: Icon, headline, body, cta, href }) => (
+          {PATHS.map(({ icon: Icon, headline, body, cta, href, external }) => (
             <div
               key={headline}
               className="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:shadow-md"
@@ -68,8 +71,9 @@ export default function WhatHappensAfter() {
               </p>
               <a
                 href={href}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...(external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-primary transition hover:text-primary/80"
               >
                 {cta}

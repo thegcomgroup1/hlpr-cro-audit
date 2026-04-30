@@ -6,6 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+type Tier = "mini" | "full" | "strategy";
+
 interface IntakeAnswers {
   business_name?: string;
   industry?: string;
@@ -30,11 +32,11 @@ interface IntakeAnswers {
 }
 
 interface RequestBody {
-  name: string;
+  name?: string;
   email: string;
-  phone: string;
-  website_url: string;
-  tier: "mini" | "full";
+  phone?: string;
+  website_url?: string;
+  tier: Tier;
   intake_answers?: IntakeAnswers;
 }
 
@@ -42,40 +44,58 @@ function validate(body: unknown): { ok: true; data: RequestBody } | { ok: false;
   if (!body || typeof body !== "object") return { ok: false, error: "Body must be a JSON object" };
   const b = body as Record<string, unknown>;
 
-  const name = typeof b.name === "string" ? b.name.trim() : "";
-  if (!name || name.length > 100) return { ok: false, error: "Invalid name" };
+  const tier = b.tier;
+  if (tier !== "mini" && tier !== "full" && tier !== "strategy") {
+    return { ok: false, error: "Invalid tier" };
+  }
 
   const email = typeof b.email === "string" ? b.email.trim() : "";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 255) {
     return { ok: false, error: "Invalid email" };
   }
 
-  const phone = typeof b.phone === "string" ? b.phone.trim() : "";
-  if (phone.length < 7 || phone.length > 30) return { ok: false, error: "Invalid phone" };
-
-  const website_url = typeof b.website_url === "string" ? b.website_url.trim() : "";
-  if (
-    website_url.length < 4 ||
-    website_url.length > 2048 ||
-    !website_url.includes(".") ||
-    !/[a-zA-Z]/.test(website_url)
-  ) {
-    return { ok: false, error: "Invalid website URL" };
-  }
-
-  const tier = b.tier;
-  if (tier !== "mini" && tier !== "full") return { ok: false, error: "Invalid tier" };
-
-  // Intake answers are optional and free-form (jsonb). Cap each string field
-  // length defensively so an attacker can't dump megabytes into our DB.
+  // For mini/full we require full contact + intake. For strategy, email-only;
+  // Stripe Checkout collects name & we collect the rest on the booking call.
+  let name: string | undefined;
+  let phone: string | undefined;
+  let website_url: string | undefined;
   let intake_answers: IntakeAnswers | undefined;
-  if (b.intake_answers && typeof b.intake_answers === "object") {
-    const raw = b.intake_answers as Record<string, unknown>;
-    intake_answers = {};
-    for (const [k, v] of Object.entries(raw)) {
-      if (typeof v === "string" && v.length <= 2000) {
-        (intake_answers as Record<string, string>)[k] = v.trim();
+
+  if (tier === "mini" || tier === "full") {
+    name = typeof b.name === "string" ? b.name.trim() : "";
+    if (!name || name.length > 100) return { ok: false, error: "Invalid name" };
+
+    phone = typeof b.phone === "string" ? b.phone.trim() : "";
+    if (phone.length < 7 || phone.length > 30) return { ok: false, error: "Invalid phone" };
+
+    website_url = typeof b.website_url === "string" ? b.website_url.trim() : "";
+    if (
+      website_url.length < 4 ||
+      website_url.length > 2048 ||
+      !website_url.includes(".") ||
+      !/[a-zA-Z]/.test(website_url)
+    ) {
+      return { ok: false, error: "Invalid website URL" };
+    }
+
+    if (b.intake_answers && typeof b.intake_answers === "object") {
+      const raw = b.intake_answers as Record<string, unknown>;
+      intake_answers = {};
+      for (const [k, v] of Object.entries(raw)) {
+        if (typeof v === "string" && v.length <= 2000) {
+          (intake_answers as Record<string, string>)[k] = v.trim();
+        }
       }
+    }
+  } else {
+    // strategy: optional name & website_url for Stripe metadata
+    if (typeof b.name === "string" && b.name.trim().length <= 100) name = b.name.trim();
+    if (
+      typeof b.website_url === "string" &&
+      b.website_url.trim().length > 0 &&
+      b.website_url.trim().length <= 2048
+    ) {
+      website_url = b.website_url.trim();
     }
   }
 
@@ -98,6 +118,7 @@ Deno.serve(async (req) => {
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
     const STRIPE_PRICE_ID_MINI = Deno.env.get("STRIPE_PRICE_ID_MINI");
     const STRIPE_PRICE_ID_FULL = Deno.env.get("STRIPE_PRICE_ID_FULL");
+    const STRIPE_PRICE_ID_STRATEGY = Deno.env.get("STRIPE_PRICE_ID_STRATEGY");
 
     if (!STRIPE_SECRET_KEY || !STRIPE_PRICE_ID_MINI || !STRIPE_PRICE_ID_FULL) {
       console.error("Missing Stripe env vars");
@@ -117,19 +138,31 @@ Deno.serve(async (req) => {
     }
 
     const { name, email, phone, website_url, tier, intake_answers } = parsed.data;
-    const priceId = tier === "mini" ? STRIPE_PRICE_ID_MINI : STRIPE_PRICE_ID_FULL;
+
+    let priceId: string | undefined;
+    if (tier === "mini") priceId = STRIPE_PRICE_ID_MINI;
+    else if (tier === "full") priceId = STRIPE_PRICE_ID_FULL;
+    else if (tier === "strategy") priceId = STRIPE_PRICE_ID_STRATEGY;
+
+    if (!priceId) {
+      console.error("Missing price ID for tier:", tier);
+      return new Response(
+        JSON.stringify({ error: "This tier is not yet configured. Please try again shortly." }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // 1. Insert audit_requests row (with intake answers if provided)
+    // 1. Insert audit_requests row
     const insertPayload: Record<string, unknown> = {
-      name,
+      name: name ?? "",
       email,
-      phone,
-      website_url,
+      phone: phone ?? "",
+      website_url: website_url ?? "",
       tier,
     };
     if (intake_answers && Object.keys(intake_answers).length > 0) {
@@ -161,12 +194,17 @@ Deno.serve(async (req) => {
     params.append("success_url", "https://audit.hlpr.io/thank-you?session_id={CHECKOUT_SESSION_ID}");
     params.append("cancel_url", "https://audit.hlpr.io");
     params.append("customer_email", email);
-    params.append("metadata[name]", name);
+    if (name) params.append("metadata[name]", name);
     params.append("metadata[email]", email);
-    params.append("metadata[phone]", phone);
-    params.append("metadata[website_url]", website_url);
+    if (phone) params.append("metadata[phone]", phone);
+    if (website_url) params.append("metadata[website_url]", website_url);
     params.append("metadata[tier]", tier);
     params.append("metadata[audit_request_id]", auditRequestId);
+
+    // Strategy call: ask Stripe to collect phone + billing address (we don't pre-collect)
+    if (tier === "strategy") {
+      params.append("phone_number_collection[enabled]", "true");
+    }
 
     const stripeRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",

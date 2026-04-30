@@ -1,11 +1,11 @@
 import { ShieldCheck } from "lucide-react";
-import type { AuditTier } from "@/components/AuditCheckoutModal";
 
-interface Props {
-  onSelectTier: (tier: AuditTier) => void;
-}
+export default function FinalCtaBand() {
+  const handleClick = () => {
+    const target = document.getElementById("strategy-call");
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
-export default function FinalCtaBand({ onSelectTier }: Props) {
   return (
     <section className="bg-secondary text-secondary-foreground">
       <div className="mx-auto max-w-4xl px-5 py-14 text-center sm:px-8 md:py-20">
@@ -19,22 +19,28 @@ export default function FinalCtaBand({ onSelectTier }: Props) {
           className="mx-auto mt-5 max-w-2xl text-base leading-relaxed opacity-80 sm:text-lg"
           style={{ textWrap: "pretty" } as React.CSSProperties}
         >
-          Get your prioritized fix list with revenue-impact estimates within{" "}
-          <span className="font-bold text-primary-foreground">60 minutes</span> —
-          backed by a <span className="font-bold text-primary-foreground">100% money-back guarantee</span>.
+          90 minutes of dedicated work on your business — a{" "}
+          <span className="font-bold text-primary-foreground">
+            20-min Loom walkthrough
+          </span>{" "}
+          delivered in 48 hours, plus a{" "}
+          <span className="font-bold text-primary-foreground">
+            30-min live Q&amp;A
+          </span>{" "}
+          to map what's worth real money.
         </p>
 
         <button
           type="button"
-          onClick={() => onSelectTier("mini")}
+          onClick={handleClick}
           className="mt-8 inline-flex h-14 items-center justify-center rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg shadow-primary/30 transition active:scale-[0.97] hover:shadow-xl"
         >
-          Get My Revenue Leak Report — $29
+          Book Strategy Call — $997
         </button>
 
         <p className="mt-4 inline-flex items-center gap-1.5 text-xs opacity-75">
           <ShieldCheck size={14} className="text-primary" />
-          Refund if we don't surface 5+ revenue-impacting fixes.
+          Money-back if you don't book a retainer follow-up.
         </p>
       </div>
     </section>

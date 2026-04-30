@@ -14,12 +14,17 @@ const ROWS: Array<{ label: string; others: string; us: string }> = [
   {
     label: "Speed",
     others: "2–4 weeks for a real audit",
-    us: "60-minute Mini Audit · 24-hour Full Audit",
+    us: "60-second Free Score · 48-hour Strategy Loom",
+  },
+  {
+    label: "Pricing",
+    others: "$2K–$10K for a static PDF",
+    us: "Free score · $997 strategy call · retainers from $500",
   },
   {
     label: "Risk",
     others: "Pay first, hope it's useful",
-    us: "100% money-back if we don't find 5+ revenue-impacting fixes",
+    us: "100% money-back if you don't book a retainer follow-up",
   },
 ];
 

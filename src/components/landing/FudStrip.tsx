@@ -4,7 +4,7 @@ const ITEMS = [
   {
     icon: ShieldCheck,
     title: "100% money-back",
-    body: "If we don't surface 5+ revenue-impacting fixes.",
+    body: "Refund if you don't book a retainer follow-up after the strategy call.",
   },
   {
     icon: Lock,
@@ -13,13 +13,13 @@ const ITEMS = [
   },
   {
     icon: Clock,
-    title: "60-minute delivery",
-    body: "Mini audit lands in your inbox within the hour. Full Audit in 24 hours.",
+    title: "Fast turnaround",
+    body: "Free CRO Score in 60 seconds. Strategy Call Loom in 48 hours.",
   },
   {
     icon: Receipt,
     title: "No hidden fees",
-    body: "One-time payment. No subscriptions, no upsells in the cart.",
+    body: "One-time payment. No subscriptions, no surprise upsells.",
   },
 ];
 
