@@ -14,8 +14,7 @@ import {
   LineChart,
   ListChecks,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call";
 import HeroV2 from "@/components/landing/HeroV2";
 import SocialProofBar from "@/components/landing/SocialProofBar";
 import PainPointSection from "@/components/landing/PainPointSection";
@@ -149,61 +148,6 @@ function HowItWorksSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-function StrategyCallButton({
-  className,
-  children,
-}: {
-  className: string;
-  children: React.ReactNode;
-}) {
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = async () => {
-    if (loading) return;
-    setLoading(true);
-    // Prompt for email so Stripe checkout can be pre-filled
-    const email = window.prompt(
-      "Enter your email to start checkout:",
-      "",
-    )?.trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      if (email !== undefined) {
-        toast({
-          title: "Email required",
-          description: "Please enter a valid email to continue to checkout.",
-          variant: "destructive",
-        });
-      }
-      setLoading(false);
-      return;
-    }
-    try {
-      const { data, error } = await supabase.functions.invoke(
-        "create-audit-checkout",
-        { body: { tier: "strategy", email } },
-      );
-      if (error) throw error;
-      if (!data?.checkout_url) throw new Error("Missing checkout URL");
-      window.location.href = data.checkout_url;
-    } catch (err) {
-      console.error(err);
-      toast({
-        title: "Checkout unavailable",
-        description:
-          "We couldn't start checkout right now. Please try again in a moment or email tim@hlpr.io.",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
-  };
-
-  return (
-    <button type="button" onClick={handleClick} disabled={loading} className={className}>
-      {loading ? "Starting checkout…" : children}
-    </button>
   );
 }
 
