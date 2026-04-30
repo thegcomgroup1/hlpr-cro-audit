@@ -151,142 +151,178 @@ function HowItWorksSection() {
   );
 }
 
-type Tier = {
-  name: string;
-  price: string;
-  compareAt?: string;
-  saveLabel?: string;
-  features: string[];
-  cta: string;
-  highlight: boolean;
-  tier: AuditTier;
-};
+function StrategyCallButton({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) {
+  const [loading, setLoading] = useState(false);
 
-function PricingSection({ onSelectTier }: { onSelectTier: (tier: AuditTier) => void }) {
-  const tiers: Tier[] = [
-    {
-      name: "Mini Audit",
-      price: "29",
-      compareAt: "79",
-      saveLabel: "Save $50",
-      features: [
-        "10–15 detailed findings",
-        "Section-by-section scoring",
-        "Prioritized fix list",
-        "Revenue impact estimates",
-        "Delivered within 60 minutes",
-      ],
-      cta: "Get Mini Audit — $29",
-      tier: "mini",
-      highlight: true,
-    },
-    {
-      name: "Full CRO Audit",
-      price: "99",
-      compareAt: "249",
-      saveLabel: "Save $150",
-      features: [
-        "25+ detailed findings",
-        "Complete page-by-page analysis",
-        "Custom recommendations with wireframes",
-        "Revenue gap calculation",
-        "Priority action plan with effort/impact matrix",
-        "Delivered within 24 hours",
-      ],
-      cta: "Get Full Audit — $99",
-      tier: "full",
-      highlight: false,
-    },
-  ];
+  const handleClick = async () => {
+    if (loading) return;
+    setLoading(true);
+    // Prompt for email so Stripe checkout can be pre-filled
+    const email = window.prompt(
+      "Enter your email to start checkout:",
+      "",
+    )?.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (email !== undefined) {
+        toast({
+          title: "Email required",
+          description: "Please enter a valid email to continue to checkout.",
+          variant: "destructive",
+        });
+      }
+      setLoading(false);
+      return;
+    }
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "create-audit-checkout",
+        { body: { tier: "strategy", email } },
+      );
+      if (error) throw error;
+      if (!data?.checkout_url) throw new Error("Missing checkout URL");
+      window.location.href = data.checkout_url;
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Checkout unavailable",
+        description:
+          "We couldn't start checkout right now. Please try again in a moment or email tim@hlpr.io.",
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
 
   return (
-    <section className="bg-background">
-      <div className="mx-auto max-w-4xl px-5 py-14 text-center sm:px-8 md:py-20">
+    <button type="button" onClick={handleClick} disabled={loading} className={className}>
+      {loading ? "Starting checkout…" : children}
+    </button>
+  );
+}
+
+function PricingSection() {
+  return (
+    <section id="strategy-call" className="bg-background">
+      <div className="mx-auto max-w-3xl px-5 py-14 text-center sm:px-8 md:py-20">
         <div className="flex justify-center">
           <AuditArc size={28} className="text-primary/70" />
         </div>
         <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-primary">
-          Pricing
+          The strategy call
         </p>
-        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl">
-          Two ways to find your revenue leak.
+        <h2
+          className="mt-3 text-3xl font-extrabold tracking-tight text-secondary sm:text-4xl"
+          style={{ textWrap: "balance" } as React.CSSProperties}
+        >
+          Find what's worth fixing first.
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-          One-time payment. No subscriptions. 100% refund if we don't find 5+
-          revenue-impacting fixes.
+          90 minutes of dedicated work on your business. The founder personally
+          analyzes your site, records a 20-minute walkthrough, then meets you
+          live for a 30-minute Q&amp;A.
         </p>
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
-          {tiers.map((t) => (
-            <div
-              key={t.name}
-              className={`relative flex flex-col rounded-2xl border bg-card p-8 text-left shadow-sm transition hover:shadow-md ${
-                t.highlight
-                  ? "border-primary ring-2 ring-primary/20 sm:scale-[1.02]"
-                  : "border-border"
-              }`}
-            >
-              {t.highlight && (
-                <>
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
-                    Most Popular
-                  </span>
-                  <AuditArc
-                    size={36}
-                    className="absolute right-3 top-3 text-primary/40"
-                  />
-                </>
-              )}
-              <h3 className="text-lg font-bold text-secondary">{t.name}</h3>
+        <div className="mt-10">
+          <div className="relative mx-auto max-w-2xl overflow-hidden rounded-2xl border border-primary bg-card p-6 text-left shadow-lg ring-2 ring-primary/15 sm:p-10">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground shadow">
+              For brands doing $100K+/month
+            </span>
+            <AuditArc size={48} className="absolute right-4 top-4 text-primary/30" />
 
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-4xl font-extrabold tracking-tight text-secondary">
-                  ${t.price}
-                </span>
-                {t.compareAt && (
-                  <span className="text-base font-medium text-muted-foreground line-through">
-                    ${t.compareAt}
-                  </span>
-                )}
-              </div>
-              {t.saveLabel && (
-                <p className="mt-1 text-xs font-bold uppercase tracking-widest text-primary">
-                  {t.saveLabel}
-                </p>
-              )}
-
-              <ul className="mt-6 flex flex-1 flex-col gap-3">
-                {t.features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-2 text-sm leading-snug text-muted-foreground"
-                  >
-                    <Check
-                      size={16}
-                      className="mt-0.5 shrink-0 text-primary"
-                      strokeWidth={2.5}
-                    />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                onClick={() => onSelectTier(t.tier)}
-                className={`mt-6 block w-full rounded-lg py-3 text-center text-sm font-bold transition active:scale-[0.97] ${
-                  t.highlight
-                    ? "bg-primary text-primary-foreground shadow-md hover:shadow-lg"
-                    : "border border-primary text-primary hover:bg-primary/5"
-                }`}
-              >
-                {t.cta}
-              </button>
+            <div>
+              <h3 className="text-2xl font-bold text-secondary">
+                The Founder Strategy Call
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Recorded walkthrough + live working session
+              </p>
             </div>
-          ))}
+
+            <div className="mt-5 flex items-baseline gap-2">
+              <span className="text-5xl font-extrabold tracking-tight text-secondary">
+                $997
+              </span>
+              <span className="text-base font-medium text-muted-foreground">
+                one-time
+              </span>
+            </div>
+            <p className="mt-1 text-xs font-bold uppercase tracking-widest text-primary">
+              Money-back if you don't book a retainer follow-up
+            </p>
+
+            <div className="mt-7 grid gap-5 sm:grid-cols-2">
+              <div className="rounded-xl border border-border bg-muted/40 p-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Step 1 · The Loom
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-secondary">
+                  Within 48 hours of booking, we deliver a 20-minute
+                  personalized video walkthrough of your site. Mobile UX,
+                  homepage, product pages, email capture, checkout — every
+                  click that's costing you money.
+                </p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/40 p-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Step 2 · The Live Q&amp;A
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-secondary">
+                  After you watch the Loom, we meet for 30 minutes live. Bring
+                  questions, push back on findings, talk through priorities.
+                  This is where the real strategy lands.
+                </p>
+              </div>
+            </div>
+
+            <ul className="mt-6 flex flex-col gap-3">
+              {[
+                "Founder-recorded — no junior consultants, no offshored review",
+                "Loom recording is yours to keep, share with team, or revisit",
+                "Live Q&A doubles as a working session — we map the next 90 days",
+                "Walk away with a prioritized fix list and an honest read on whether you need a retainer",
+              ].map((f) => (
+                <li
+                  key={f}
+                  className="flex items-start gap-2 text-sm leading-snug text-muted-foreground"
+                >
+                  <Check
+                    size={16}
+                    className="mt-0.5 shrink-0 text-primary"
+                    strokeWidth={2.5}
+                  />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <StrategyCallButton className="mt-7 block w-full rounded-lg bg-primary py-3 text-center text-sm font-bold text-primary-foreground shadow-md transition active:scale-[0.97] hover:shadow-lg disabled:opacity-70">
+              Book Strategy Call — $997
+            </StrategyCallButton>
+
+            <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
+              For brands doing $100K+/month. Sub-$100K? Get the free CRO score
+              instead — most fixes route into our $500–$1,500 setup tiers at{" "}
+              <a
+                href="https://solutions.hlpr.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary transition hover:text-primary/80"
+              >
+                solutions.hlpr.io
+              </a>
+              .
+            </p>
+          </div>
         </div>
 
         <p className="mt-8 text-sm text-muted-foreground">
-          Not ready?{" "}
+          Not ready for a paid call?{" "}
           <a
             href="#free-score"
             className="font-semibold text-primary transition hover:text-primary/80"
