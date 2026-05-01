@@ -14,8 +14,7 @@ import {
   LineChart,
   ListChecks,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call";
 import HeroV2 from "@/components/landing/HeroV2";
 import SocialProofBar from "@/components/landing/SocialProofBar";
 import PainPointSection from "@/components/landing/PainPointSection";
@@ -152,61 +151,6 @@ function HowItWorksSection() {
   );
 }
 
-function StrategyCallButton({
-  className,
-  children,
-}: {
-  className: string;
-  children: React.ReactNode;
-}) {
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = async () => {
-    if (loading) return;
-    setLoading(true);
-    // Prompt for email so Stripe checkout can be pre-filled
-    const email = window.prompt(
-      "Enter your email to start checkout:",
-      "",
-    )?.trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      if (email !== undefined) {
-        toast({
-          title: "Email required",
-          description: "Please enter a valid email to continue to checkout.",
-          variant: "destructive",
-        });
-      }
-      setLoading(false);
-      return;
-    }
-    try {
-      const { data, error } = await supabase.functions.invoke(
-        "create-audit-checkout",
-        { body: { tier: "strategy", email } },
-      );
-      if (error) throw error;
-      if (!data?.checkout_url) throw new Error("Missing checkout URL");
-      window.location.href = data.checkout_url;
-    } catch (err) {
-      console.error(err);
-      toast({
-        title: "Checkout unavailable",
-        description:
-          "We couldn't start checkout right now. Please try again in a moment or email tim@hlpr.io.",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
-  };
-
-  return (
-    <button type="button" onClick={handleClick} disabled={loading} className={className}>
-      {loading ? "Starting checkout…" : children}
-    </button>
-  );
-}
-
 function PricingSection() {
   return (
     <section id="strategy-call" className="bg-background">
@@ -302,9 +246,14 @@ function PricingSection() {
               ))}
             </ul>
 
-            <StrategyCallButton className="mt-7 block w-full rounded-lg bg-primary py-3 text-center text-sm font-bold text-primary-foreground shadow-md transition active:scale-[0.97] hover:shadow-lg disabled:opacity-70">
+            <a
+              href={STRIPE_PAYMENT_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-7 block w-full rounded-lg bg-primary py-3 text-center text-sm font-bold text-primary-foreground shadow-md transition active:scale-[0.97] hover:shadow-lg"
+            >
               Book Strategy Call — $997
-            </StrategyCallButton>
+            </a>
 
             <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
               For brands doing $100K+/month. Sub-$100K? Get the free CRO score
@@ -520,7 +469,9 @@ export default function Index() {
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:px-8">
           <Logo className="text-xl text-primary" />
           <a
-            href="#strategy-call"
+            href={STRIPE_PAYMENT_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition active:scale-[0.97] hover:shadow-md"
           >
             Book Strategy Call

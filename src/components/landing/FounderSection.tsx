@@ -1,6 +1,7 @@
 import { Mail, Calendar, Instagram } from "lucide-react";
 import founderHeadshot from "@/assets/founder-headshot.png";
 import AuditArc from "./visuals/AuditArc";
+import { STRATEGY_CALL_BOOKING_LINK } from "@/lib/strategy-call";
 
 export default function FounderSection() {
   return (
@@ -79,7 +80,7 @@ export default function FounderSection() {
                 <Mail size={14} /> tim@hlpr.io
               </a>
               <a
-                href="https://links.hlpr.io/booking/aiMEM9Qf7GmaU0L6sTYT"
+                href={STRATEGY_CALL_BOOKING_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition hover:text-primary/80"

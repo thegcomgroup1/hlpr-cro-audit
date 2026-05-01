@@ -1,4 +1,5 @@
 import { Mail, Globe, Compass, ArrowRight } from "lucide-react";
+import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call";
 
 const PATHS = [
   {
@@ -25,8 +26,8 @@ const PATHS = [
     body:
       "The $997 strategy call is for brands at $100K+/mo who want senior eyes on the funnel. 90 minutes of dedicated work, money-back if you don't book a retainer follow-up.",
     cta: "Book Strategy Call — $997",
-    href: "#strategy-call",
-    external: false,
+    href: STRIPE_PAYMENT_LINK,
+    external: true,
   },
 ];
 
