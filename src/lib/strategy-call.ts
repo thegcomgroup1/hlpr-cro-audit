@@ -14,4 +14,4 @@ export const STRIPE_PAYMENT_LINK =
   "https://book.stripe.com/8x24gsgmTa1CgUQadG8IU02";
 
 export const STRATEGY_CALL_BOOKING_LINK =
-  "https://links.hlpr.io/booking/TO8SkIKU2m4j6qJjvnA4/sv/69f3cac89a99e04cc6338d42";
+  "https://links.hlpr.io/widget/booking/mGkgVjwTlZC4OtRz7GB5";
