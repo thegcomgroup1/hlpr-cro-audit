@@ -1,11 +1,7 @@
 import { ShieldCheck } from "lucide-react";
+import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call";
 
 export default function FinalCtaBand() {
-  const handleClick = () => {
-    const target = document.getElementById("strategy-call");
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
     <section className="bg-secondary text-secondary-foreground">
       <div className="mx-auto max-w-4xl px-5 py-14 text-center sm:px-8 md:py-20">
@@ -30,13 +26,14 @@ export default function FinalCtaBand() {
           to map what's worth real money.
         </p>
 
-        <button
-          type="button"
-          onClick={handleClick}
+        <a
+          href={STRIPE_PAYMENT_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
           className="mt-8 inline-flex h-14 items-center justify-center rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg shadow-primary/30 transition active:scale-[0.97] hover:shadow-xl"
         >
           Book Strategy Call — $997
-        </button>
+        </a>
 
         <p className="mt-4 inline-flex items-center gap-1.5 text-xs opacity-75">
           <ShieldCheck size={14} className="text-primary" />

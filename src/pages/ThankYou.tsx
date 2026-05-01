@@ -11,9 +11,9 @@ import {
   Search,
   Send,
 } from "lucide-react";
+import { STRATEGY_CALL_BOOKING_LINK } from "@/lib/strategy-call";
 
-const BOOKING_URL =
-  "https://api.leadconnectorhq.com/widget/booking/aiMEM9Qf7GmaU0L6sTYT";
+const BOOKING_URL = STRATEGY_CALL_BOOKING_LINK;
 
 function Logo({ className = "" }: { className?: string }) {
   return (

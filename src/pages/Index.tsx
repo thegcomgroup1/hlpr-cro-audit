@@ -246,9 +246,14 @@ function PricingSection() {
               ))}
             </ul>
 
-            <StrategyCallButton className="mt-7 block w-full rounded-lg bg-primary py-3 text-center text-sm font-bold text-primary-foreground shadow-md transition active:scale-[0.97] hover:shadow-lg disabled:opacity-70">
+            <a
+              href={STRIPE_PAYMENT_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-7 block w-full rounded-lg bg-primary py-3 text-center text-sm font-bold text-primary-foreground shadow-md transition active:scale-[0.97] hover:shadow-lg"
+            >
               Book Strategy Call — $997
-            </StrategyCallButton>
+            </a>
 
             <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
               For brands doing $100K+/month. Sub-$100K? Get the free CRO score
@@ -464,7 +469,9 @@ export default function Index() {
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:px-8">
           <Logo className="text-xl text-primary" />
           <a
-            href="#strategy-call"
+            href={STRIPE_PAYMENT_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition active:scale-[0.97] hover:shadow-md"
           >
             Book Strategy Call

@@ -1,18 +1,8 @@
-import { Star, ShieldCheck, ArrowDown, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { Star, ShieldCheck, ArrowDown } from "lucide-react";
 import ReportMockup from "./ReportMockup";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call";
 
 export default function HeroV2() {
-  const [loading, setLoading] = useState(false);
-
-  const handleBookStrategy = async () => {
-    // Anchor scroll so the user sees the pricing card too
-    const target = document.getElementById("strategy-call");
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
     <section className="relative overflow-hidden bg-background pt-24 sm:pt-28">
       {/* Soft background wash */}
@@ -56,15 +46,14 @@ export default function HeroV2() {
 
           {/* Primary CTA */}
           <div className="mt-7 flex flex-col items-center gap-3 md:items-start">
-            <button
-              type="button"
-              onClick={handleBookStrategy}
-              disabled={loading}
-              className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg shadow-primary/25 transition active:scale-[0.97] hover:shadow-xl hover:shadow-primary/30 disabled:opacity-70"
+            <a
+              href={STRIPE_PAYMENT_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-14 items-center justify-center rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg shadow-primary/25 transition active:scale-[0.97] hover:shadow-xl hover:shadow-primary/30"
             >
-              {loading && <Loader2 size={16} className="animate-spin" />}
               Book My Strategy Call — $997
-            </button>
+            </a>
 
             <p className="text-xs text-muted-foreground">
               Personalized video + 30-min live Q&amp;A. Money-back if you don't
