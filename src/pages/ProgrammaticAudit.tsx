@@ -1,4 +1,4 @@
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useLocation, Link, Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Check, ChevronDown, ChevronUp, ExternalLink, Mail, Phone, ShieldCheck, Star } from "lucide-react";
 import { useState } from "react";
@@ -174,11 +174,9 @@ function Footer() {
 }
 
 export default function ProgrammaticAudit() {
-  const params = useParams();
-  // Reconstruct slug from any nested segments (e.g. /cro-audit/shopify -> "cro-audit/shopify")
-  const slug = params["*"] ? `${params.section ?? ""}/${params["*"]}`.replace(/^\/+/, "") : params.section ?? "";
-  const fullSlug = slug || "";
-  const page = getPageBySlug(fullSlug);
+  const location = useLocation();
+  const slug = location.pathname.replace(/^\/+|\/+$/g, "");
+  const page = getPageBySlug(slug);
 
   if (!page) return <Navigate to="/404" replace />;
 
