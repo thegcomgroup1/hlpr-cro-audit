@@ -453,7 +453,7 @@ function Footer() {
             <ExternalLink size={14} /> hlpr.io
           </a>
         </div>
-        <p className="mt-4 text-xs opacity-40">
+        <p className="mt-4 text-xs opacity-70">
           © {new Date().getFullYear()} HLPR. All rights reserved.
         </p>
       </div>
