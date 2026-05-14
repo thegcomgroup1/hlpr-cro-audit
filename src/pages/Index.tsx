@@ -463,9 +463,28 @@ function Footer() {
   );
 }
 
-export default function Index() {
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
   return (
     <div className="min-h-screen overflow-x-hidden">
+      <Helmet>
+        <title>Free CRO Audit for E-Commerce Stores | HLPR</title>
+        <meta name="description" content="Get a free conversion rate optimization score for your online store. We analyze 50+ factors and show you exactly where you're losing revenue." />
+        <link rel="canonical" href="https://audit.hlpr.io/" />
+        <meta property="og:title" content="Free CRO Audit for E-Commerce Stores | HLPR" />
+        <meta property="og:description" content="Get a free conversion rate optimization score for your online store. We analyze 50+ factors and show you exactly where you're losing revenue." />
+        <meta property="og:url" content="https://audit.hlpr.io/" />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
+      </Helmet>
+      {/* Sticky nav */}
       {/* Sticky nav */}
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:px-8">
