@@ -1,0 +1,17 @@
+# HLPR — Free CRO Audit for E-Commerce Stores
+
+> HLPR helps e-commerce founders find the conversion leaks costing them tens of thousands in lost revenue. Get a free CRO score in 60 seconds, or book a founder-led Strategy Call for a personalized video walkthrough plus live Q&A.
+
+HLPR is a conversion rate optimization (CRO) service run by Tim, founder of hlpr.io. The team has optimized $1.2M+ in client ad spend across 10+ live sites in e-commerce, services, and ministries. The audit packages the same diagnostic methodology used on five-figure retainers.
+
+## Pages
+
+- [Home](/): Free CRO score, paid Strategy Call ($997), founder bio, portfolio, and methodology.
+- [Thank You](/thank-you): Post-purchase confirmation and next steps.
+
+## Contact
+
+- Email: tim@hlpr.io
+- Phone: (302) 550-8521
+- Agency: https://solutions.hlpr.io
+- Instagram: https://instagram.com/hlpr.agency
