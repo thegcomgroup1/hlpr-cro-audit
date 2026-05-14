@@ -211,6 +211,16 @@ export default function ThankYou() {
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-background">
+      <Helmet>
+        <title>Thank You — Strategy Call Booked | HLPR</title>
+        <meta name="description" content="Your HLPR Founder Strategy Call is confirmed. Here's what happens next: a personalized Loom walkthrough, then a live Q&A session." />
+        <meta name="robots" content="noindex" />
+        <link rel="canonical" href="https://audit.hlpr.io/thank-you" />
+        <meta property="og:title" content="Thank You — Strategy Call Booked | HLPR" />
+        <meta property="og:description" content="Your HLPR Founder Strategy Call is confirmed." />
+        <meta property="og:url" content="https://audit.hlpr.io/thank-you" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <Nav />
       <main className="flex-1">{isValid ? <SuccessView /> : <FallbackView />}</main>
       <Footer />
