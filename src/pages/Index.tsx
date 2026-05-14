@@ -476,13 +476,14 @@ export default function Index() {
   return (
     <div className="min-h-screen overflow-x-hidden">
       <Helmet>
-        <title>Free CRO Audit for E-Commerce Stores | HLPR</title>
-        <meta name="description" content="Get a free conversion rate optimization score for your online store. We analyze 50+ factors and show you exactly where you're losing revenue." />
+        <title>CRO Audit for E-Commerce Stores | hlpr</title>
+        <meta name="description" content="A CRO audit built for $50K+/mo e-commerce and service businesses. Find the leaks costing you ad ROI — recorded video walkthrough + 30-min strategy call." />
         <link rel="canonical" href="https://audit.hlpr.io/" />
-        <meta property="og:title" content="Free CRO Audit for E-Commerce Stores | HLPR" />
-        <meta property="og:description" content="Get a free conversion rate optimization score for your online store. We analyze 50+ factors and show you exactly where you're losing revenue." />
+        <meta property="og:title" content="CRO Audit for E-Commerce Stores | hlpr" />
+        <meta property="og:description" content="Find the leaks costing you ad ROI. Recorded video walkthrough + 30-min strategy call from the founder." />
         <meta property="og:url" content="https://audit.hlpr.io/" />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://audit.hlpr.io/og-image.jpg" />
         <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
       </Helmet>
       {/* Sticky nav */}
