@@ -463,6 +463,7 @@ function Footer() {
   );
 }
 
+export default function Index() {
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -484,7 +485,6 @@ function Footer() {
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
       </Helmet>
-      {/* Sticky nav */}
       {/* Sticky nav */}
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:px-8">
