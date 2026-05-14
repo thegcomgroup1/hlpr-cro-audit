@@ -66,7 +66,10 @@ export default function PortfolioStrip() {
                 <img
                   src={item.screenshot}
                   alt={`${item.brand} — ${item.category}`}
+                  width={400}
+                  height={300}
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-top"
                 />
               </div>
