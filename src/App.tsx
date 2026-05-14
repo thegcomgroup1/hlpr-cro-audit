@@ -8,6 +8,8 @@ import IntakePreview from "./pages/IntakePreview.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
 import ProgrammaticAudit from "./pages/ProgrammaticAudit.tsx";
+import Auth from "./pages/Auth.tsx";
+import SeoDashboard from "./pages/SeoDashboard.tsx";
 import { PROGRAMMATIC_PAGES } from "./data/programmatic-pages";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/audit/intake-preview" element={<IntakePreview />} />
           <Route path="/thank-you" element={<ThankYou />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/dashboard/seo" element={<SeoDashboard />} />
           {PROGRAMMATIC_PAGES.map((p) => (
             <Route key={p.slug} path={`/${p.slug}`} element={<ProgrammaticAudit />} />
           ))}
