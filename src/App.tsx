@@ -7,6 +7,8 @@ import Index from "./pages/Index.tsx";
 import IntakePreview from "./pages/IntakePreview.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ThankYou from "./pages/ThankYou.tsx";
+import ProgrammaticAudit from "./pages/ProgrammaticAudit.tsx";
+import { PROGRAMMATIC_PAGES } from "./data/programmatic-pages";
 
 const queryClient = new QueryClient();
 
@@ -17,9 +19,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/audit/intake-preview" element={<IntakePreview />} />
-        <Route path="/thank-you" element={<ThankYou />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/audit/intake-preview" element={<IntakePreview />} />
+          <Route path="/thank-you" element={<ThankYou />} />
+          {PROGRAMMATIC_PAGES.map((p) => (
+            <Route key={p.slug} path={`/${p.slug}`} element={<ProgrammaticAudit />} />
+          ))}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
