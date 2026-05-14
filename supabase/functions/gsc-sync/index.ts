@@ -178,7 +178,11 @@ Deno.serve(async (req) => {
     }
 
     // Insert alerts (dedupe: skip if same type+page exists in last 7 days)
+    // and send an email for each new alert.
+    const ADMIN_EMAIL = "tim@hlpr.io";
+    const DASHBOARD_URL = "https://audit.hlpr.io/dashboard/seo";
     let inserted = 0;
+    let emailed = 0;
     for (const a of alerts) {
       const sevenAgo = new Date(Date.now() - 7 * 86400000).toISOString();
       const { count } = await supabase
@@ -188,8 +192,45 @@ Deno.serve(async (req) => {
         .eq("page", a.page)
         .gte("created_at", sevenAgo);
       if ((count ?? 0) === 0) {
-        const { error } = await supabase.from("seo_alerts").insert(a);
-        if (!error) inserted++;
+        const { data: row, error } = await supabase
+          .from("seo_alerts")
+          .insert(a)
+          .select("id")
+          .single();
+        if (!error && row) {
+          inserted++;
+          // Fire-and-log email send (non-blocking on failure)
+          try {
+            const { error: sendErr } = await supabase.functions.invoke(
+              "send-transactional-email",
+              {
+                body: {
+                  templateName: "seo-alert",
+                  recipientEmail: ADMIN_EMAIL,
+                  idempotencyKey: `seo-alert-${row.id}`,
+                  templateData: {
+                    alertType: a.alert_type,
+                    page: a.page,
+                    message: a.message,
+                    metricValue: a.metric_value,
+                    dashboardUrl: DASHBOARD_URL,
+                  },
+                },
+              },
+            );
+            if (!sendErr) {
+              emailed++;
+              await supabase
+                .from("seo_alerts")
+                .update({ email_sent: true })
+                .eq("id", row.id);
+            } else {
+              console.error("send-transactional-email failed", sendErr);
+            }
+          } catch (e) {
+            console.error("send-transactional-email threw", e);
+          }
+        }
       }
     }
 
@@ -200,6 +241,7 @@ Deno.serve(async (req) => {
         rows: dailyRows.length,
         alerts_evaluated: alerts.length,
         alerts_inserted: inserted,
+        alerts_emailed: emailed,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
