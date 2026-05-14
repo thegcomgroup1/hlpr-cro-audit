@@ -453,7 +453,7 @@ function Footer() {
             <ExternalLink size={14} /> hlpr.io
           </a>
         </div>
-        <p className="mt-4 text-xs opacity-40">
+        <p className="mt-4 text-xs opacity-70">
           © {new Date().getFullYear()} HLPR. All rights reserved.
         </p>
       </div>
@@ -479,66 +479,68 @@ export default function Index() {
         </div>
       </nav>
 
-      <HeroV2 />
-      <SocialProofBar />
-      <PainPointSection />
+      <main>
+        <HeroV2 />
+        <SocialProofBar />
+        <PainPointSection />
 
-      <ValuePropRow
-        eyebrow="Customer-journey audit"
-        headline="See your store the way your customers actually do."
-        body="We audit homepage, product pages, mobile UX, and checkout flow as a single connected journey — not isolated pages — so we catch the friction that costs you the sale."
-        bullets={[
-          "6 categories scored 0–100",
-          "Mobile + desktop reviewed separately",
-          "Full funnel from ad click to confirmation",
-        ]}
-        icon={Search}
-        visual={<CustomerJourneyVisual />}
-      />
+        <ValuePropRow
+          eyebrow="Customer-journey audit"
+          headline="See your store the way your customers actually do."
+          body="We audit homepage, product pages, mobile UX, and checkout flow as a single connected journey — not isolated pages — so we catch the friction that costs you the sale."
+          bullets={[
+            "6 categories scored 0–100",
+            "Mobile + desktop reviewed separately",
+            "Full funnel from ad click to confirmation",
+          ]}
+          icon={Search}
+          visual={<CustomerJourneyVisual />}
+        />
 
-      <ValuePropRow
-        reverse
-        eyebrow="Revenue-impact estimates"
-        headline="Every finding comes with a dollar figure attached."
-        body="We don't just say 'fix this.' We tell you what it's costing you and what it'll be worth — so you can sequence your roadmap by impact, not opinion."
-        bullets={[
-          "Estimated monthly revenue lift per fix",
-          "Effort score 1–5 for engineering",
-          "Sequenced by impact ÷ effort",
-        ]}
-        icon={LineChart}
-        visual={<RevenueImpactVisual />}
-      />
+        <ValuePropRow
+          reverse
+          eyebrow="Revenue-impact estimates"
+          headline="Every finding comes with a dollar figure attached."
+          body="We don't just say 'fix this.' We tell you what it's costing you and what it'll be worth — so you can sequence your roadmap by impact, not opinion."
+          bullets={[
+            "Estimated monthly revenue lift per fix",
+            "Effort score 1–5 for engineering",
+            "Sequenced by impact ÷ effort",
+          ]}
+          icon={LineChart}
+          visual={<RevenueImpactVisual />}
+        />
 
-      <ValuePropRow
-        eyebrow="Prioritized action plan"
-        headline="What to fix first. Ranked by ROI."
-        body="No 100-item dump. We give you the top fixes ranked by ROI, with the wording, layout, and offers your visitors actually need to convert."
-        bullets={[
-          "Top 3 quick wins for week 1",
-          "Mid-priority improvements for the next sprint",
-          "Long-term structural fixes flagged separately",
-        ]}
-        icon={ListChecks}
-        visual={<PrioritizedActionVisual />}
-      />
+        <ValuePropRow
+          eyebrow="Prioritized action plan"
+          headline="What to fix first. Ranked by ROI."
+          body="No 100-item dump. We give you the top fixes ranked by ROI, with the wording, layout, and offers your visitors actually need to convert."
+          bullets={[
+            "Top 3 quick wins for week 1",
+            "Mid-priority improvements for the next sprint",
+            "Long-term structural fixes flagged separately",
+          ]}
+          icon={ListChecks}
+          visual={<PrioritizedActionVisual />}
+        />
 
-      <PortfolioStrip />
-      <WallOfLove />
-      <DifferentiatorSection />
-      <HowItWorksSection />
+        <PortfolioStrip />
+        <WallOfLove />
+        <DifferentiatorSection />
+        <HowItWorksSection />
 
-      <div id="pricing">
-        <PricingSection />
-      </div>
+        <div id="pricing">
+          <PricingSection />
+        </div>
 
-      <WhatHappensAfter />
-      <FudStrip />
-      <FounderSection />
-      <FreeScoreSection />
-      <CredibilitySection />
-      <FAQSection />
-      <FinalCtaBand />
+        <WhatHappensAfter />
+        <FudStrip />
+        <FounderSection />
+        <FreeScoreSection />
+        <CredibilitySection />
+        <FAQSection />
+        <FinalCtaBand />
+      </main>
       <Footer />
     </div>
   );
