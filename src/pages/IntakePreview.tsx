@@ -38,6 +38,12 @@ export default function IntakePreview() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Intake Form Preview | HLPR</title>
+        <meta name="description" content="Internal QA preview of the HLPR audit intake form. No payment is taken on this page." />
+        <meta name="robots" content="noindex" />
+        <link rel="canonical" href="https://audit.hlpr.io/audit/intake-preview" />
+      </Helmet>
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
