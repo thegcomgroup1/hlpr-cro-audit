@@ -13,6 +13,10 @@ export default function FounderSection() {
             <img
               src={founderHeadshot}
               alt="Tim, founder of hlpr"
+              width={160}
+              height={160}
+              loading="lazy"
+              decoding="async"
               className="h-32 w-32 rounded-full object-cover shadow-xl shadow-primary/30 sm:h-40 sm:w-40"
             />
           </div>
