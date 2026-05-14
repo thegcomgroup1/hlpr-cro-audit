@@ -324,46 +324,47 @@ function CredibilitySection() {
   );
 }
 
-function FAQSection() {
-  const faqs = [
-    {
-      q: "Does this work for my niche?",
-      a: "Yes. Our intake form captures industry, business model (e-com, services, SaaS, local, info), AOV, and customer pain points so the audit is shaped to your business — not a generic e-com checklist.",
-    },
-    {
-      q: "What if I don't have a website yet?",
-      a: "If you have a live website, landing page, or booking page — we can audit it. If you have nothing live yet, book a strategy call and we'll scope the right starting point together.",
-    },
-    {
-      q: "How is this different from PageSpeed Insights or a free tool?",
-      a: "Free tools score technical speed. We audit the full customer journey: copy, offer clarity, social proof placement, FUD reduction, mobile UX, and checkout flow — judgment calls no automated tool can make.",
-    },
-    {
-      q: "What if the strategy call doesn't lead anywhere?",
-      a: "If you book the strategy call but don't end up wanting to follow up with a retainer call afterward, we refund the $997 in full. The strategy call is structured as a self-funding intro: it pays for itself if you take the next step, costs you nothing if you don't.",
-    },
-    {
-      q: "Who actually runs the audit?",
-      a: "Tim, founder of hlpr — 10+ years running paid traffic, email, and CRO across $1M+ in managed ad spend. No outsourced contractors, no AI-generated reports.",
-    },
-    {
-      q: "How long does it take?",
-      a: "Free CRO Score: emailed within 60 seconds of submission. Strategy Call: Loom delivered within 48 hours of booking, live Q&A scheduled at your preferred time after.",
-    },
-    {
-      q: "What if I want you to fix what you find?",
-      a: "Yes — full implementation services are available. Email retainers start at $500. Website builds start at $1,500 plus monthly support. The strategy call's ROI estimates usually make the right tier obvious, and most callers convert to retainer because the math speaks for itself.",
-    },
-    {
-      q: "Why $997 instead of a cheaper PDF audit?",
-      a: "Because cheap audits don't move the needle. A 20-page PDF you read once doesn't change anything — your team still won't ship the fixes. The strategy call is built differently: live work with the founder, recording you can replay, and a structured next step into a real retainer if it's the right fit. We charge for outcomes, not deliverables.",
-    },
-    {
-      q: "Is the free score actually useful?",
-      a: "Yes — you'll get your overall conversion health score plus the top 3 fixes killing your conversions right now. Most stores can implement at least one immediately.",
-    },
-  ];
+const FAQS = [
+  {
+    q: "Does this work for my niche?",
+    a: "Yes. Our intake form captures industry, business model (e-com, services, SaaS, local, info), AOV, and customer pain points so the audit is shaped to your business — not a generic e-com checklist.",
+  },
+  {
+    q: "What if I don't have a website yet?",
+    a: "If you have a live website, landing page, or booking page — we can audit it. If you have nothing live yet, book a strategy call and we'll scope the right starting point together.",
+  },
+  {
+    q: "How is this different from PageSpeed Insights or a free tool?",
+    a: "Free tools score technical speed. We audit the full customer journey: copy, offer clarity, social proof placement, FUD reduction, mobile UX, and checkout flow — judgment calls no automated tool can make.",
+  },
+  {
+    q: "What if the strategy call doesn't lead anywhere?",
+    a: "If you book the strategy call but don't end up wanting to follow up with a retainer call afterward, we refund the $997 in full. The strategy call is structured as a self-funding intro: it pays for itself if you take the next step, costs you nothing if you don't.",
+  },
+  {
+    q: "Who actually runs the audit?",
+    a: "Tim, founder of hlpr — 10+ years running paid traffic, email, and CRO across $1M+ in managed ad spend. No outsourced contractors, no AI-generated reports.",
+  },
+  {
+    q: "How long does it take?",
+    a: "Free CRO Score: emailed within 60 seconds of submission. Strategy Call: Loom delivered within 48 hours of booking, live Q&A scheduled at your preferred time after.",
+  },
+  {
+    q: "What if I want you to fix what you find?",
+    a: "Yes — full implementation services are available. Email retainers start at $500. Website builds start at $1,500 plus monthly support. The strategy call's ROI estimates usually make the right tier obvious, and most callers convert to retainer because the math speaks for itself.",
+  },
+  {
+    q: "Why $997 instead of a cheaper PDF audit?",
+    a: "Because cheap audits don't move the needle. A 20-page PDF you read once doesn't change anything — your team still won't ship the fixes. The strategy call is built differently: live work with the founder, recording you can replay, and a structured next step into a real retainer if it's the right fit. We charge for outcomes, not deliverables.",
+  },
+  {
+    q: "Is the free score actually useful?",
+    a: "Yes — you'll get your overall conversion health score plus the top 3 fixes killing your conversions right now. Most stores can implement at least one immediately.",
+  },
+];
 
+function FAQSection() {
+  const faqs = FAQS;
   const [open, setOpen] = useState<number | null>(0);
 
   return (
