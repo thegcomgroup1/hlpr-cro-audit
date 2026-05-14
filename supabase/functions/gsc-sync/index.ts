@@ -241,6 +241,7 @@ Deno.serve(async (req) => {
         rows: dailyRows.length,
         alerts_evaluated: alerts.length,
         alerts_inserted: inserted,
+        alerts_emailed: emailed,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
