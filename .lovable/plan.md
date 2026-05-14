@@ -1,62 +1,127 @@
-# Wire Strategy Call CTAs to Stripe Payment Link
+## Goal
 
-Replace the current `window.prompt()` + `create-audit-checkout` edge-function flow with direct anchor links to the Stripe Payment Link. Centralize the URLs in one config file. Defaults: send sticky-nav straight to Stripe (Option default), and update the founder section to the new $997 calendar (Option A).
+Get audit.hlpr.io ranking for "CRO audit" and adjacent terms, drive ~500–2,000 organic visits/mo within 90 days, then scale. Target audience: $50K+/mo ecommerce & service businesses already running ads who want better ROI.
 
-## Files to create
+## Part 1 — Finish Google Search Console (today, ~5 min)
 
-**`src/lib/strategy-call.ts`** (new)
-- Export `STRIPE_PAYMENT_LINK = "https://book.stripe.com/8x24gsgmTa1CgUQadG8IU02"`
-- Export `STRATEGY_CALL_BOOKING_LINK = "https://links.hlpr.io/booking/TO8SkIKU2m4j6qJjvnA4/sv/69f3cac89a99e04cc6338d42"`
-- Header comment documenting that Stripe handles the post-payment redirect via dashboard config.
+I'll automate it via the GSC connector:
 
-## Files to edit
+1. Request a META verification token from Google
+2. Add `<meta name="google-site-verification" content="...">` to `index.html`
+3. **You publish** (one click)
+4. I call Google's verify endpoint, then register `https://audit.hlpr.io/` as a property
+5. Submit `sitemap.xml` to GSC
 
-**`src/pages/Index.tsx`**
-- Add `import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call"`.
-- Delete the entire `StrategyCallButton` component (lines 155–208) and its `window.prompt` checkout logic.
-- Remove now-unused imports: `useState` (verify no other usage in file), `supabase` from `@/integrations/supabase/client`, and `toast` from `@/hooks/use-toast` if not referenced elsewhere.
-- In `PricingSection`, replace `<StrategyCallButton …>Book Strategy Call — $997</StrategyCallButton>` (line 305) with an `<a href={STRIPE_PAYMENT_LINK} target="_blank" rel="noopener noreferrer">` styled identically (minus `disabled:opacity-70`).
-- In the sticky nav (line 522), change `href="#strategy-call"` to `href={STRIPE_PAYMENT_LINK}` and add `target="_blank" rel="noopener noreferrer"`.
+After that you'll see impressions/clicks data flowing in within ~48 hrs.
 
-**`src/components/landing/HeroV2.tsx`**
-- Imports: drop `Loader2`, `useState`, `supabase`, `toast`. Add `import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call"`.
-- Delete the `loading` state and `handleBookStrategy` function.
-- Replace the primary CTA `<button>` with `<a href={STRIPE_PAYMENT_LINK} target="_blank" rel="noopener noreferrer">` styled identically (drop the spinner + `disabled:opacity-70`).
+## Part 2 — Keyword strategy (Semrush-grounded)
 
-**`src/components/landing/FinalCtaBand.tsx`**
-- Add `import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call"`.
-- Delete the `handleClick` scroll function.
-- Replace the `<button onClick={handleClick}>` with `<a href={STRIPE_PAYMENT_LINK} target="_blank" rel="noopener noreferrer">` styled identically.
+Quick read on the market (Semrush, US):
 
-**`src/components/landing/WhatHappensAfter.tsx`**
-- Add `import { STRIPE_PAYMENT_LINK } from "@/lib/strategy-call"`.
-- For the third path entry (the "deeper systemic issues" card): change `href: "#strategy-call"` to `href: STRIPE_PAYMENT_LINK` and `external: true` so the existing render path applies `target="_blank" rel="noopener noreferrer"`.
+| Keyword | Volume/mo | Difficulty | Play |
+|---|---|---|---|
+| cro consultant | 590 | 12 (very easy) | **Primary target** |
+| shopify conversion rate optimization | 590 | 17 (easy) | **Primary target** |
+| cro audit | 1,000 | 23 (easy) | **Already aligned with homepage** |
+| conversion rate optimization agency | 2,900 | 38 | Stretch goal — needs a dedicated page |
+| ecommerce conversion rate | 1,300 | 41 | Pillar blog post |
+| conversion rate optimization | 18,100 | 77 (hard) | Skip — dominated by HubSpot/Shopify |
 
-**`src/components/landing/FounderSection.tsx`**
-- Add `import { STRATEGY_CALL_BOOKING_LINK } from "@/lib/strategy-call"`.
-- Replace the line-82 `href="https://links.hlpr.io/booking/aiMEM9Qf7GmaU0L6sTYT"` with `href={STRATEGY_CALL_BOOKING_LINK}`. Keep label, icon, and styling.
+Verdict: there are 5–10 winnable terms in the 12–40 difficulty range. A new site with focused content can realistically rank top-10 for several within 60–120 days.
 
-**`src/pages/ThankYou.tsx`**
-- Add `import { STRATEGY_CALL_BOOKING_LINK } from "@/lib/strategy-call"`.
-- Change `const BOOKING_URL = "https://api.leadconnectorhq.com/widget/booking/aiMEM9Qf7GmaU0L6sTYT"` to `const BOOKING_URL = STRATEGY_CALL_BOOKING_LINK`.
+## Part 3 — On-page SEO fixes (week 1)
 
-## Sweeps after edits
+- Tighten homepage `<title>` and H1 to include "CRO audit" + value prop
+- Add an internal `Article` JSON-LD-ready blog architecture
+- Generate a proper `og:image` (currently uses favicon — looks broken when shared on LinkedIn/Slack)
+- Add FAQ schema to homepage (already have FAQ section — just wire JSON-LD)
+- Add breadcrumbs schema sitewide
 
-1. `rg "aiMEM9Qf7GmaU0L6sTYT" src/` — expect zero hits in audit-page code paths after the founder + thank-you updates.
-2. `rg "create-audit-checkout|tier.*\"strategy\"|window\\.prompt" src/` — expect zero hits.
-3. `rg "STRIPE_PRICE_ID_STRATEGY" src/` — expect zero hits (frontend no longer depends on it).
+## Part 4 — Programmatic landing pages (weeks 1–2)
 
-The `create-audit-checkout` edge function is left untouched (dormant strategy branch preserved).
+High-leverage pages targeting commercial-intent keywords. One template, many pages, each with unique copy:
 
-## Out of scope
+1. `/cro-audit/shopify` — "Shopify CRO Audit" (KD 17)
+2. `/cro-audit/ecommerce` — "Ecommerce CRO Audit" (KD ~25)
+3. `/cro-consultant` — "CRO Consultant" (KD 12)
+4. `/conversion-rate-optimization-agency` — Agency page (KD 38)
+5. `/cro-audit/dtc-brands` — DTC niche
+6. `/free-cro-tools` — lead magnet hub (KD low, links in)
 
-- Stripe dashboard "After payment" redirect config (Part 2 of the patch — done by user, not code).
-- End-to-end test in Stripe test mode (Part 3 — manual QA by user).
+Each ~800–1,200 words, with unique testimonials/case studies, FAQ, and CTA to your existing audit funnel.
 
-## Deliverables on completion
+## Part 5 — Blog engine (week 2)
 
-1. List of files touched + one-liner per file.
-2. Confirmation no `window.prompt()` remains for the strategy call.
-3. Confirmation no frontend code references `STRIPE_PRICE_ID_STRATEGY` or `create-audit-checkout`.
-4. Confirmation Hero, Pricing card, Sticky nav, FinalCtaBand, and WhatHappensAfter card 3 all link to `STRIPE_PAYMENT_LINK`.
-5. Confirmation FounderSection uses `STRATEGY_CALL_BOOKING_LINK`.
+You picked "no blog yet — other tactics first," so I'll **defer the blog build** and focus on programmatic pages + off-site tactics. When you're ready (Month 2), simplest path is **MDX in repo** — I draft, you review in Lovable, push live. No CMS overhead.
+
+## Part 6 — Content calendar (12 posts/mo when blog launches)
+
+Bucketed for SEO + sales enablement:
+
+**Bottom-funnel (4/mo) — convert ad traffic & rank for buyer terms**
+- "What is a CRO Audit? (And When You Actually Need One)"
+- "Shopify CRO Audit Checklist: 47 Things We Look At"
+- "How Much Does a CRO Audit Cost? (Real 2026 Pricing)"
+- "CRO Consultant vs Agency vs DIY: Which Should You Pick?"
+
+**Mid-funnel (4/mo) — capture researchers**
+- "Average Ecommerce Conversion Rate by Industry [2026 Data]"
+- "12 Reasons Your Shopify Store Has a Low Conversion Rate"
+- "Cart Abandonment: The 8 Fixes That Actually Move the Needle"
+- "Mobile Conversion Rate: Why You're Losing 60% of Buyers"
+
+**Top-funnel (2/mo) — link bait + brand**
+- "We Audited 100 Shopify Stores. Here's What We Found." (data study)
+- "The State of DTC Conversion Rates 2026" (annual report → backlinks)
+
+**Comparison/Versus (2/mo) — capture solution-aware searches**
+- "Hotjar vs Microsoft Clarity for CRO"
+- "Best CRO Audit Tools (Free + Paid)"
+
+## Part 7 — Off-page / link building (ongoing)
+
+1. **Free tool as link magnet** — your existing free CRO score IS the magnet. Promote it to ecom subreddits, IndieHackers, Twitter/X
+2. **Guest posts** — pitch 2/mo to ecom blogs (Littledata, ConversionXL community, Shopify Partner blog)
+3. **HARO / Qwoted / Featured.com** — answer 5 journalist queries/week (10–15 min each → high-DA backlinks)
+4. **Podcast tour** — 1 ecommerce podcast/mo as guest
+5. **Directory submissions** — Shopify Experts, Clutch, G2 (one-time setup)
+
+## Part 8 — Tracking & iteration
+
+- GSC weekly: which queries are getting impressions but no clicks → rewrite titles
+- Semrush monthly: track ranked keywords, find new gaps
+- GA4 (if not already installed) for funnel attribution
+
+## 90-day milestone targets
+
+| Month | Output | Expected result |
+|---|---|---|
+| 1 | GSC live, 6 programmatic pages, on-page fixes, 4 backlinks | Indexed, 50–200 visits/mo |
+| 2 | Blog launch + 12 posts, 8 more backlinks | 200–800 visits/mo, 1–2 audit leads |
+| 3 | 12 more posts, data study, 1 podcast | 500–2,000 visits/mo, 3–8 leads |
+
+## What I'll do right after you approve
+
+**Phase 1 (single message, ~15 min of your time):**
+1. GSC verification flow (you publish, I verify)
+2. On-page SEO fixes (titles, FAQ schema, OG image)
+3. Build the 6 programmatic pages with shared template
+4. Update sitemap
+
+**Phase 2 (your call when ready):**
+- Blog engine + first batch of posts
+- I'll draft content; you review/edit in Lovable
+
+## Technical notes
+
+- GSC: meta-tag verification via Lovable's `google_search_console` connector — no DNS work needed
+- Programmatic pages: one `<ProgrammaticAuditPage>` component + a TS data file with per-page copy. React Router dynamic routes. Each page gets its own `<Helmet>` (already installed) for unique title/description/canonical/JSON-LD
+- Sitemap: migrate from hand-edited `public/sitemap.xml` to `scripts/generate-sitemap.ts` so new programmatic pages auto-register
+- OG image: generate a 1200×630 branded image with `imagegen`
+- No new dependencies needed (react-helmet-async already installed)
+
+## What I need from you
+
+1. **Approve this plan** (or tell me what to change)
+2. **Hit Publish** when I prompt you (twice — once for GSC verify, once after Phase 1 build)
+3. Optional: any case-study numbers, real client names/logos I can reference in the programmatic pages
