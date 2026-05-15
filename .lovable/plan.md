@@ -1,50 +1,43 @@
-## Plan: SEO alert emails + admin access
+## Goal
 
-### Part 1 — Admin signup (you do this now)
+Replace the current `/dashboard/seo` UI with the polished dashboard from the **HLPR Ministries** project — KPI cards with 28d-vs-prior deltas, 90-day trend chart, Top queries / Top pages, Opportunity queries (CTR-vs-baseline), and Sitemap coverage — pointed at `audit.hlpr.io`.
 
-You're already on `/auth`. Steps:
-1. Sign up with **tim@hlpr.io** + a password
-2. Confirm via the verification email Lovable sends
-3. Reply "signed up" — I'll run a one-line insert to grant your account the `admin` role
-4. You'll then be able to load `/dashboard/seo`
+## What changes
 
-### Part 2 — Email alerts (I build this)
+### 1. New edge function: `gsc-analytics`
+Single endpoint that returns one payload the dashboard renders. Pulls live from the Search Console connector (no DB round-trips, no 1–2 day snapshot lag). 5-min in-memory cache.
 
-**a. Scaffold transactional email infrastructure**
-- Run `email_domain--scaffold_transactional_email` to create the `send-transactional-email` Edge Function, the unsubscribe handler, and a sample template directory
-- Deploy the new functions
+Returns:
+- `range` / `previousRange` (last 28d, prior 28d)
+- `current` / `previous` totals
+- `trend` — daily clicks + impressions, last 90 days
+- `queries` — top 25 by impressions, last 28d
+- `pages` — top 25 by clicks, last 28d
+- `opportunities` — query+page rows, last 28d
+- `sitemaps` — `/webmasters/v3/sites/{site}/sitemaps` list
 
-**b. Create one transactional template: `seo-alert`**
-- File: `supabase/functions/_shared/transactional-email-templates/seo-alert.tsx`
-- Props: `alertType`, `page`, `message`, `metricValue`, `dashboardUrl`
-- Subject (function): `🚨 SEO alert — {alertLabel} on {page}`
-- Branded with hlpr blue/navy, links to `/dashboard/seo`
-- Register in `registry.ts`
+Auth: requires a logged-in admin (verifies JWT + `has_role(uid, 'admin')`). No password gate — we already have Supabase auth working.
 
-**c. Modify `gsc-sync` to send emails when new alerts are inserted**
-- After inserting each new alert, invoke `send-transactional-email` with:
-  - `templateName: 'seo-alert'`
-  - `recipientEmail: 'tim@hlpr.io'`
-  - `idempotencyKey: \`seo-alert-${alert.id}\`` (one email per alert, retry-safe)
-  - `templateData: { alertType, page, message, metricValue, dashboardUrl }`
-- Update the inserted `seo_alerts` row to set `email_sent = true` (column already exists)
-- Redeploy `gsc-sync`
+### 2. Rewrite `src/pages/SeoDashboard.tsx`
+Port the Ministries layout 1:1, adapted to this project:
+- Header: "SEO Dashboard · audit.hlpr.io · {start} → {end}", Refresh + Sign out buttons
+- 4 KPI cards (Clicks / Impressions / CTR / Avg position) with up/down delta vs prior 28d (lower-is-better for position)
+- Daily clicks & impressions area chart (recharts, 90 days, dual axis)
+- Two-column: Top queries + Top pages tables
+- Opportunity queries card (position 5–20, ≥100 impressions, CTR < 80% of position baseline)
+- Sitemap coverage card
+- Keep the existing admin-role check + redirect-to-/auth guard
 
-**d. Daily digest? — No.** Each new alert gets its own email. Triggers fire at most once per type+page per 7-day window (already deduped in gsc-sync), so volume stays low (~0–5 emails/day).
+### 3. Keep, but de-emphasize, the alerts system
+The `seo_alerts` + `seo_page_snapshots` tables and the daily `gsc-sync` cron stay (they power the email alerts you already wired up). The dashboard just stops rendering the alerts list and snapshot table — the alerts still fire by email. If you'd rather rip them out entirely, say so and I'll drop them in step 2.
 
-### What you'll see
-- Each new alert that passes the 7-day dedupe check → one email to tim@hlpr.io with the page, the trigger, and a "View dashboard" button
-- In-dashboard alert feed continues to work exactly as before
-- Email infra is already set up (notify.audit.hlpr.io); DNS will continue verifying in the background
+## Technical notes
 
-### Technical notes
-- No new tables, no schema changes — `seo_alerts.email_sent` already exists
-- Total new files: 1 template (`seo-alert.tsx`); modified files: `registry.ts`, `gsc-sync/index.ts`
-- All sends go through the durable email queue (auto-retry, suppression-aware)
+- `recharts` is already a dependency (used by `components/ui/chart.tsx`) — no new packages.
+- Connector gateway calls reuse the existing pattern from `gsc-sync/index.ts` (`LOVABLE_API_KEY` + `X-Connection-Api-Key`, site = `https://audit.hlpr.io/`).
+- Edge function uses `verify_jwt = true` (default) so `supabase.functions.invoke` from the browser passes the user JWT; inside the function we double-check the admin role with the service-role client.
+- 5-min cache keyed by date range, in-memory per isolate — enough to make Refresh feel instant without hammering GSC quota.
 
-### Open question
-The first sync after deploy could fire several "first impressions" alerts at once (one per page Google has shown). Want me to:
-- **A)** Send all of them (truthful but possibly 5–10 emails on day 1), or
-- **B)** Cap day-1 emails to top 3 by impressions, mark the rest `email_sent=true` silently?
+## Open question
 
-Default if you don't pick: **A**.
+Want me to **remove** the alerts+snapshots tables/cron entirely (simpler, but you lose the daily email alerts), or **keep them running in the background** and just hide them from the dashboard? Default is keep.

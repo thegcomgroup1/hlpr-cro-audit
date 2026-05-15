@@ -1,210 +1,418 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { ArrowDownRight, ArrowUpRight, RefreshCw, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertCircle, RefreshCw, LogOut, TrendingUp, TrendingDown, MousePointerClick, Eye } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 
-type Snapshot = { snapshot_date: string; page: string; clicks: number; impressions: number; ctr: number; position: number };
-type Alert = { id: string; alert_type: string; page: string; message: string; metric_value: number | null; created_at: string; acknowledged: boolean };
+interface GscRow {
+  keys?: string[];
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+interface GscTotals {
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+interface GscPayload {
+  range: { start: string; end: string };
+  previousRange: { start: string; end: string };
+  current: { rows?: GscRow[] };
+  previous: { rows?: GscRow[] };
+  trend: { rows?: GscRow[] };
+  queries: { rows?: GscRow[] };
+  pages: { rows?: GscRow[] };
+  opportunities: { rows?: GscRow[] };
+  sitemaps: {
+    sitemap?: Array<{
+      path: string;
+      lastSubmitted?: string;
+      lastDownloaded?: string;
+      errors?: number;
+      warnings?: number;
+    }>;
+  };
+}
 
-const ALERT_LABEL: Record<string, { label: string; color: string }> = {
-  first_impressions: { label: "New page indexed", color: "bg-blue-500" },
-  crossed_100: { label: "100 impressions", color: "bg-green-500" },
-  clicks_drop: { label: "Clicks drop", color: "bg-red-500" },
-  low_ctr: { label: "Low CTR", color: "bg-amber-500" },
+const SITE = "https://audit.hlpr.io";
+
+function totalsFrom(rows?: GscRow[]): GscTotals {
+  const r = rows?.[0];
+  return {
+    clicks: r?.clicks ?? 0,
+    impressions: r?.impressions ?? 0,
+    ctr: r?.ctr ?? 0,
+    position: r?.position ?? 0,
+  };
+}
+function delta(curr: number, prev: number) {
+  if (!prev) return curr ? 100 : 0;
+  return ((curr - prev) / prev) * 100;
+}
+const fmtPct = (v: number, d = 1) => `${(v * 100).toFixed(d)}%`;
+const fmtPos = (v: number) => (v ? v.toFixed(1) : "—");
+const fmtNum = (v: number) => v.toLocaleString();
+
+const POSITION_CTR_BASELINE: Record<number, number> = {
+  1: 0.28, 2: 0.16, 3: 0.11, 4: 0.08, 5: 0.06,
+  6: 0.05, 7: 0.04, 8: 0.035, 9: 0.03, 10: 0.025,
+  11: 0.018, 12: 0.015, 13: 0.013, 14: 0.011, 15: 0.01,
+  16: 0.009, 17: 0.008, 18: 0.007, 19: 0.006, 20: 0.005,
 };
+function expectedCtr(pos: number) {
+  const k = Math.min(20, Math.max(1, Math.round(pos)));
+  return POSITION_CTR_BASELINE[k] ?? 0.005;
+}
+
+function KpiCard({ label, value, prev, format }: {
+  label: string;
+  value: number;
+  prev: number;
+  format: (v: number) => string;
+}) {
+  const d = delta(value, prev);
+  const positive = label === "Avg position" ? d < 0 : d >= 0;
+  const Arrow = positive ? ArrowUpRight : ArrowDownRight;
+  return (
+    <Card className="p-5">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-2 text-3xl font-semibold tracking-tight">{format(value)}</p>
+      <p className={`mt-1 inline-flex items-center gap-1 text-xs ${positive ? "text-emerald-600" : "text-rose-600"}`}>
+        <Arrow className="h-3.5 w-3.5" />
+        {Math.abs(d).toFixed(1)}% vs prior 28d
+      </p>
+    </Card>
+  );
+}
 
 export default function SeoDashboard() {
   const navigate = useNavigate();
+  const [data, setData] = useState<GscPayload | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { navigate("/auth", { replace: true }); return; }
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", session.user.id);
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id);
       const admin = (roles ?? []).some((r: any) => r.role === "admin");
       setIsAdmin(admin);
-      if (admin) await loadData();
-      setLoading(false);
+      setAuthChecked(true);
+      if (admin) load();
     })();
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const loadData = async () => {
-    const since = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
-    const [snap, al] = await Promise.all([
-      supabase.from("seo_page_snapshots").select("*").gte("snapshot_date", since).order("snapshot_date", { ascending: false }),
-      supabase.from("seo_alerts").select("*").order("created_at", { ascending: false }).limit(50),
-    ]);
-    setSnapshots((snap.data as Snapshot[]) ?? []);
-    setAlerts((al.data as Alert[]) ?? []);
-  };
-
-  const runSync = async () => {
-    setSyncing(true);
+  async function load() {
+    setLoading(true);
+    setError(null);
     try {
-      const { data, error } = await supabase.functions.invoke("gsc-sync");
+      const { data, error } = await supabase.functions.invoke("gsc-analytics");
       if (error) throw error;
-      toast({ title: "Synced", description: `${data?.rows ?? 0} pages, ${data?.alerts_inserted ?? 0} new alerts` });
-      await loadData();
+      if ((data as any)?.error) throw new Error((data as any).error);
+      setData(data as GscPayload);
     } catch (e: any) {
-      toast({ title: "Sync failed", description: e.message, variant: "destructive" });
+      const msg = e?.message ?? "Failed to load";
+      setError(msg);
+      toast({ title: "Failed to load", description: msg, variant: "destructive" });
     } finally {
-      setSyncing(false);
+      setLoading(false);
     }
+  }
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
   };
 
-  const ackAlert = async (id: string) => {
-    await supabase.from("seo_alerts").update({ acknowledged: true }).eq("id", id);
-    setAlerts((a) => a.map((x) => x.id === id ? { ...x, acknowledged: true } : x));
-  };
+  const totals = useMemo(() => totalsFrom(data?.current.rows), [data]);
+  const prevTotals = useMemo(() => totalsFrom(data?.previous.rows), [data]);
 
-  const signOut = async () => { await supabase.auth.signOut(); navigate("/auth"); };
-
-  // Aggregate by page (30d)
-  const byPage = useMemo(() => {
-    const m = new Map<string, { clicks: number; impressions: number; positions: number[] }>();
-    snapshots.forEach((s) => {
-      const e = m.get(s.page) ?? { clicks: 0, impressions: 0, positions: [] };
-      e.clicks += s.clicks; e.impressions += s.impressions;
-      if (s.position > 0) e.positions.push(s.position);
-      m.set(s.page, e);
-    });
-    return Array.from(m.entries())
-      .map(([page, v]) => ({
-        page,
-        clicks: v.clicks,
-        impressions: v.impressions,
-        ctr: v.impressions ? v.clicks / v.impressions : 0,
-        avgPos: v.positions.length ? v.positions.reduce((a, b) => a + b, 0) / v.positions.length : 0,
-      }))
-      .sort((a, b) => b.impressions - a.impressions);
-  }, [snapshots]);
-
-  const totals = useMemo(() => byPage.reduce(
-    (acc, p) => ({ clicks: acc.clicks + p.clicks, impressions: acc.impressions + p.impressions }),
-    { clicks: 0, impressions: 0 },
-  ), [byPage]);
-
-  const unackAlerts = alerts.filter((a) => !a.acknowledged);
-
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;
-  if (!isAdmin) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
-      <p className="text-muted-foreground text-center">You're signed in but not an admin yet. Ask the project owner to grant access.</p>
-      <Button variant="outline" onClick={signOut}>Sign out</Button>
-    </div>
+  const trendData = useMemo(
+    () =>
+      (data?.trend.rows ?? []).map((r) => ({
+        date: r.keys?.[0] ?? "",
+        clicks: r.clicks,
+        impressions: r.impressions,
+      })),
+    [data],
   );
 
+  const opportunities = useMemo(() => {
+    const rows = data?.opportunities.rows ?? [];
+    return rows
+      .filter(
+        (r) =>
+          r.position >= 5 &&
+          r.position <= 20 &&
+          r.impressions >= 100 &&
+          r.ctr < expectedCtr(r.position) * 0.8,
+      )
+      .sort((a, b) => b.impressions - a.impressions)
+      .slice(0, 25);
+  }, [data]);
+
+  if (!authChecked) {
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;
+  }
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
+        <p className="text-muted-foreground text-center">You're signed in but not an admin yet.</p>
+        <Button variant="outline" onClick={signOut}>Sign out</Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-muted/40">
-      <Helmet><title>SEO Dashboard — hlpr</title><meta name="robots" content="noindex" /></Helmet>
+    <>
+      <Helmet>
+        <title>SEO Dashboard — hlpr</title>
+        <meta name="robots" content="noindex,nofollow" />
+      </Helmet>
+      <main className="min-h-screen bg-background px-6 py-8">
+        <div className="mx-auto max-w-7xl space-y-6">
+          <header className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">SEO Dashboard</h1>
+              <p className="text-sm text-muted-foreground">
+                Google Search Console · audit.hlpr.io
+                {data?.range && (
+                  <> · {data.range.start} → {data.range.end}</>
+                )}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                Refresh
+              </Button>
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="mr-2 h-4 w-4" /> Sign out
+              </Button>
+            </div>
+          </header>
 
-      <header className="border-b bg-background">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold">SEO Dashboard <span className="text-muted-foreground font-normal text-sm ml-2">last 30 days</span></h1>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={runSync} disabled={syncing}>
-              <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} /> Sync now
-            </Button>
-            <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="w-4 h-4" /></Button>
-          </div>
-        </div>
-      </header>
+          {error && (
+            <Card className="border-destructive/50 bg-destructive/5 p-4 text-sm text-destructive">
+              {error}
+            </Card>
+          )}
 
-      <main className="max-w-6xl mx-auto px-6 py-6 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <StatCard icon={<Eye className="w-4 h-4" />} label="Impressions (30d)" value={totals.impressions.toLocaleString()} />
-          <StatCard icon={<MousePointerClick className="w-4 h-4" />} label="Clicks (30d)" value={totals.clicks.toLocaleString()} />
-          <StatCard icon={<TrendingUp className="w-4 h-4" />} label="Avg CTR" value={`${totals.impressions ? ((totals.clicks / totals.impressions) * 100).toFixed(2) : "0.00"}%`} />
-          <StatCard icon={<AlertCircle className="w-4 h-4" />} label="Active alerts" value={String(unackAlerts.length)} />
-        </div>
+          {loading && !data ? (
+            <div className="grid gap-4 md:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-28" />
+              ))}
+            </div>
+          ) : data ? (
+            <>
+              <section className="grid gap-4 md:grid-cols-4">
+                <KpiCard label="Clicks" value={totals.clicks} prev={prevTotals.clicks} format={fmtNum} />
+                <KpiCard label="Impressions" value={totals.impressions} prev={prevTotals.impressions} format={fmtNum} />
+                <KpiCard label="CTR" value={totals.ctr} prev={prevTotals.ctr} format={(v) => fmtPct(v)} />
+                <KpiCard label="Avg position" value={totals.position} prev={prevTotals.position} format={fmtPos} />
+              </section>
 
-        {/* Alerts */}
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Alerts</CardTitle></CardHeader>
-          <CardContent>
-            {alerts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No alerts yet. Run a sync or wait for the daily job.</p>
-            ) : (
-              <div className="space-y-2">
-                {alerts.slice(0, 20).map((a) => {
-                  const meta = ALERT_LABEL[a.alert_type] ?? { label: a.alert_type, color: "bg-gray-500" };
-                  return (
-                    <div key={a.id} className={`flex items-start justify-between gap-3 p-3 rounded-md border ${a.acknowledged ? "opacity-50" : "bg-background"}`}>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className={`${meta.color} text-white border-0`}>{meta.label}</Badge>
-                          <span className="text-xs text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</span>
-                        </div>
-                        <p className="text-sm font-medium truncate">{a.page}</p>
-                        <p className="text-xs text-muted-foreground">{a.message}</p>
-                      </div>
-                      {!a.acknowledged && (
-                        <Button variant="ghost" size="sm" onClick={() => ackAlert(a.id)}>Dismiss</Button>
+              <Card className="p-5">
+                <h2 className="text-sm font-medium">Daily clicks & impressions · last 90 days</h2>
+                <div className="mt-4 h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={trendData}>
+                      <defs>
+                        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.25} />
+                          <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis yAxisId="left" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip
+                        contentStyle={{
+                          background: "hsl(var(--popover))",
+                          border: "1px solid hsl(var(--border))",
+                          borderRadius: 8,
+                          fontSize: 12,
+                        }}
+                      />
+                      <Area yAxisId="right" type="monotone" dataKey="impressions" stroke="hsl(var(--muted-foreground))" fill="url(#g2)" />
+                      <Area yAxisId="left" type="monotone" dataKey="clicks" stroke="hsl(var(--primary))" fill="url(#g1)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+
+              <section className="grid gap-6 lg:grid-cols-2">
+                <Card className="p-5">
+                  <h2 className="text-sm font-medium">Top queries</h2>
+                  <p className="text-xs text-muted-foreground">By impressions, last 28 days</p>
+                  <div className="mt-3 max-h-96 overflow-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Query</TableHead>
+                          <TableHead className="text-right">Clicks</TableHead>
+                          <TableHead className="text-right">Impr.</TableHead>
+                          <TableHead className="text-right">CTR</TableHead>
+                          <TableHead className="text-right">Pos.</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(data.queries.rows ?? []).map((r) => (
+                          <TableRow key={r.keys?.[0]}>
+                            <TableCell className="max-w-[220px] truncate">{r.keys?.[0]}</TableCell>
+                            <TableCell className="text-right">{fmtNum(r.clicks)}</TableCell>
+                            <TableCell className="text-right">{fmtNum(r.impressions)}</TableCell>
+                            <TableCell className="text-right">{fmtPct(r.ctr)}</TableCell>
+                            <TableCell className="text-right">{fmtPos(r.position)}</TableCell>
+                          </TableRow>
+                        ))}
+                        {(data.queries.rows ?? []).length === 0 && (
+                          <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">No data yet — Google needs ~1–2 weeks to start reporting.</TableCell></TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </Card>
+
+                <Card className="p-5">
+                  <h2 className="text-sm font-medium">Top pages</h2>
+                  <p className="text-xs text-muted-foreground">By clicks, last 28 days</p>
+                  <div className="mt-3 max-h-96 overflow-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Page</TableHead>
+                          <TableHead className="text-right">Clicks</TableHead>
+                          <TableHead className="text-right">Impr.</TableHead>
+                          <TableHead className="text-right">CTR</TableHead>
+                          <TableHead className="text-right">Pos.</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(data.pages.rows ?? []).map((r) => {
+                          const path = (r.keys?.[0] ?? "").replace(SITE, "") || "/";
+                          return (
+                            <TableRow key={r.keys?.[0]}>
+                              <TableCell className="max-w-[220px] truncate font-mono text-xs">{path}</TableCell>
+                              <TableCell className="text-right">{fmtNum(r.clicks)}</TableCell>
+                              <TableCell className="text-right">{fmtNum(r.impressions)}</TableCell>
+                              <TableCell className="text-right">{fmtPct(r.ctr)}</TableCell>
+                              <TableCell className="text-right">{fmtPos(r.position)}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                        {(data.pages.rows ?? []).length === 0 && (
+                          <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">No data yet.</TableCell></TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </Card>
+              </section>
+
+              <Card className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-medium">Opportunity queries</h2>
+                    <p className="text-xs text-muted-foreground">
+                      Ranking position 5–20, ≥100 impressions, CTR below baseline. Best targets to refresh.
+                    </p>
+                  </div>
+                  <Badge variant="secondary">{opportunities.length}</Badge>
+                </div>
+                <div className="mt-3 max-h-96 overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Query</TableHead>
+                        <TableHead>Page</TableHead>
+                        <TableHead className="text-right">Impr.</TableHead>
+                        <TableHead className="text-right">CTR</TableHead>
+                        <TableHead className="text-right">Pos.</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {opportunities.map((r, i) => {
+                        const path = (r.keys?.[1] ?? "").replace(SITE, "") || "/";
+                        return (
+                          <TableRow key={`${r.keys?.[0]}-${i}`}>
+                            <TableCell className="max-w-[200px] truncate">{r.keys?.[0]}</TableCell>
+                            <TableCell className="max-w-[200px] truncate font-mono text-xs">{path}</TableCell>
+                            <TableCell className="text-right">{fmtNum(r.impressions)}</TableCell>
+                            <TableCell className="text-right">{fmtPct(r.ctr)}</TableCell>
+                            <TableCell className="text-right">{fmtPos(r.position)}</TableCell>
+                          </TableRow>
+                        );
+                      })}
+                      {opportunities.length === 0 && (
+                        <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Nothing flagged yet — appears once you accumulate impressions.</TableCell></TableRow>
                       )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </Card>
+
+              <Card className="p-5">
+                <h2 className="text-sm font-medium">Sitemap coverage</h2>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  {(data.sitemaps.sitemap ?? []).map((s) => (
+                    <div key={s.path} className="rounded-md border p-3 text-sm">
+                      <p className="truncate font-mono text-xs">{s.path}</p>
+                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                        <div>Submitted: {s.lastSubmitted?.slice(0, 10) ?? "—"}</div>
+                        <div>Last read: {s.lastDownloaded?.slice(0, 10) ?? "—"}</div>
+                        <div>Errors: <span className={s.errors ? "text-rose-600" : ""}>{s.errors ?? 0}</span></div>
+                        <div>Warnings: {s.warnings ?? 0}</div>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Page table */}
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Pages (30 days)</CardTitle></CardHeader>
-          <CardContent>
-            {byPage.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No data yet. Click <strong>Sync now</strong> to pull the latest from Search Console.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Page</TableHead>
-                    <TableHead className="text-right">Clicks</TableHead>
-                    <TableHead className="text-right">Impr.</TableHead>
-                    <TableHead className="text-right">CTR</TableHead>
-                    <TableHead className="text-right">Avg pos</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {byPage.map((p) => (
-                    <TableRow key={p.page}>
-                      <TableCell className="max-w-xs truncate text-sm">{p.page.replace("https://audit.hlpr.io", "")}</TableCell>
-                      <TableCell className="text-right font-mono">{p.clicks}</TableCell>
-                      <TableCell className="text-right font-mono">{p.impressions.toLocaleString()}</TableCell>
-                      <TableCell className="text-right font-mono">{(p.ctr * 100).toFixed(2)}%</TableCell>
-                      <TableCell className="text-right font-mono">{p.avgPos.toFixed(1)}</TableCell>
-                    </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                  {(data.sitemaps.sitemap ?? []).length === 0 && (
+                    <p className="text-sm text-muted-foreground">No sitemaps registered.</p>
+                  )}
+                </div>
+              </Card>
+            </>
+          ) : null}
+        </div>
       </main>
-    </div>
-  );
-}
-
-function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">{icon}{label}</div>
-        <div className="text-2xl font-bold">{value}</div>
-      </CardContent>
-    </Card>
+    </>
   );
 }
